@@ -17,6 +17,7 @@ motorB = LargeMotor('outB')
 
 sensorInfra = InfraredSensor("in1")
 
+
 def funcao_saturacao(v):
     if v > 1000:
         return 1000
@@ -25,31 +26,22 @@ def funcao_saturacao(v):
     else:
         return v
 
+
 offset = 28
 constProp = 50
 
 try:
     while True:
         erro = offset - sensorInfra.value()
-        giro = erro*constProp
+        giro = erro * constProp
 
-        motorA.run_forever(speed_sp=funcao_saturacao(170-giro))
-        motorB.run_forever(speed_sp=funcao_saturacao(170+giro))
+        motorA.run_forever(speed_sp=funcao_saturacao(170 - giro))
+        motorB.run_forever(speed_sp=funcao_saturacao(170 + giro))
 except KeyboardInterrupt:
     motorA.stop()
     motorB.stop()
 
-#verificar quando faz a curva perto da borda (esta caindo). precisa controlar isso!!
-
-
-
-
-
-
-
-
-
-
+# verificar quando faz a curva perto da borda (esta caindo). precisa controlar isso!!
 
 
 # while(True):
