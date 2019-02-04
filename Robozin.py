@@ -1,21 +1,7 @@
 #!/usr/bin/env python3
 from ev3dev.ev3 import *
 
-motorA = LargeMotor('outA')
-motorB = LargeMotor('outB')
-
-sensorInfra = InfraredSensor("in1")
-sensorCor = ColorSensor("in2")
-MODE_COL_COLOR = 'COL-COLOR'
-
-branco, preto, azul, verde, vermelho = 6, 1, 2, 3, 5
-corLida = sensorCor.color
-
-
-def virarDireita():
-    motorA = LargeMotor('outA')
-    motorB = LargeMotor('outB')
-
+def virarDireita(motorA, motorB):
     for i in range(700):
         motorA.run_forever(speed_sp=200)
         motorB.run_forever(speed_sp=200)
@@ -28,18 +14,12 @@ def virarDireita():
         motorA.run_forever(speed_sp=200)
         motorB.run_forever(speed_sp=200)
 
-def seguirFrente():
-    motorA = LargeMotor('outA')
-    motorB = LargeMotor('outB')
-
+def seguirFrente(motorA, motorB):
     for i in range(1500):
         motorA.run_forever(speed_sp=200)
         motorB.run_forever(speed_sp=200)
 
-def virarEsquerda():
-    motorA = LargeMotor('outA')
-    motorB = LargeMotor('outB')
-
+def virarEsquerda(motorA, motorB):
     for i in range(700):
         motorA.run_forever(speed_sp=200)
         motorB.run_forever(speed_sp=200)
@@ -52,6 +32,11 @@ def virarEsquerda():
         motorA.run_forever(speed_sp=200)
         motorB.run_forever(speed_sp=200)
 
+def saberCor():
+
+    return 0
+
+
 
 def funcao_saturacao(v):
     if v > 1000:
@@ -60,6 +45,20 @@ def funcao_saturacao(v):
         return -1000
     else:
         return v
+
+
+
+motorA = LargeMotor('outA')
+motorB = LargeMotor('outB')
+
+sensorInfra = InfraredSensor("in1")
+sensorCor = ColorSensor("in2")
+MODE_COL_COLOR = 'COL-COLOR'
+
+branco, preto, azul, verde, vermelho = 6, 1, 2, 3, 5
+
+acoes = {"acaoVermelho": seguirFrente(motorA, motorB), "acaoVerde": virarEsquerda(motorA, motorB), "acaoAzul": virarEsquerda(motorA, motorB)}
+
 
 offset = 28
 constProp = 30
@@ -74,15 +73,18 @@ try:
         motorA.run_forever(speed_sp=funcao_saturacao(170 - giro))
         motorB.run_forever(speed_sp=funcao_saturacao(170 + giro))
 
+
+
         if str(corLida) == str(vermelho):
-            seguirFrente()
+            seguirFrente(motorA, motorB)
         if str(corLida) == str(verde):
-            virarDireita()
+            virarDireita(motorA, motorB)
         if str(corLida) == str(azul):
-            virarEsquerda()
+            virarEsquerda(motorA, motorB)
 
 
         print("valor = " + str(corLida))
+
 except KeyboardInterrupt:
     motorA.stop()
     motorB.stop()
