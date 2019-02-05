@@ -63,6 +63,7 @@ sensorCor = ColorSensor("in2")
 MODE_COL_COLOR = 'COL-COLOR'
 
 semCor, preto, azul, verde, vermelho, branco = 0, 1, 2, 3, 5, 6
+CoresValidas = []
 
 corVermelha = "Esquerda"
 corVerde = "Direita"
@@ -89,14 +90,23 @@ try:
 #       print(sensorCor.color)
 
         # Tratamento de transição de cores
-        
+
         if cont < 10 and corLida != 6:
             listaCor.append(corLida)
             print (listaCor)
             cont += 1
 
+        elif corLida == 6:
+            listaCor = [-1]
+            cont = 0
+
         elif cont >= 10:
-            if moda(listaCor) != verde and moda(listaCor) != preto and moda(listaCor) != branco and moda(listaCor) != semCor:
+
+            primeiraCor = moda(listaCor)
+
+
+
+            if moda(listaCor) != primeiraCor and moda(listaCor) != preto and moda(listaCor) != branco and moda(listaCor) != semCor:
                 print("-------------------------------ENTREI AQUI 1------------------------")
                 achouACor = True
 
@@ -111,30 +121,32 @@ try:
                     print("-------------------------------ENTREI AQUI 8------------------------")
                 listaCor = [-1]
 
-            elif moda(listaCor) == verde and achouACor == False:
-                print ("-------------------------------ENTREI AQUI 2------------------------")
-                print("cor: ", sensorCor.color)
-                virarEsquerda(motorA, motorB)
+            elif moda(listaCor) == preto:
                 qtdQueViraEsquerda += 1
-                listaCor = [-1]
+                print ("CONTEI UM PRETO")
+
+            # elif moda(listaCor) == verde and achouACor == False:
+            #     print ("-------------------------------ENTREI AQUI 2------------------------")
+            #     print("cor: ", sensorCor.color)
+            #     virarEsquerda(motorA, motorB)
+            #     qtdQueViraEsquerda += 1
+            #     listaCor = [-1]
+            #
+            #
+            # if moda(listaCor) == verde and corVerde == "Esquerda" and achouACor == True:
+            #     print("-------------------------------ENTREI AQUI 3------------------------")
+            #     virarEsquerda(motorA, motorB)
+            #     listaCor = [-1]
+            # if moda(listaCor) == verde and corVerde == "Direita" and achouACor == True:
+            #     print("-------------------------------ENTREI AQUI 4------------------------")
+            #     virarDireita(motorA, motorB)
+            #     listaCor = [-1]
+            # if moda(listaCor) == verde and corVerde == "Frente" and achouACor == True:
+            #     print("-------------------------------ENTREI AQUI 5------------------------")
+            #     seguirFrente(motorA, motorB)
+            #     listaCor = [-1]
 
 
-            if moda(listaCor) == verde and corVerde == "Esquerda" and achouACor == True:
-                print("-------------------------------ENTREI AQUI 3------------------------")
-                virarEsquerda(motorA, motorB)
-                listaCor = [-1]
-            if moda(listaCor) == verde and corVerde == "Direita" and achouACor == True:
-                print("-------------------------------ENTREI AQUI 4------------------------")
-                virarDireita(motorA, motorB)
-                listaCor = [-1]
-            if moda(listaCor) == verde and corVerde == "Frente" and achouACor == True:
-                print("-------------------------------ENTREI AQUI 5------------------------")
-                seguirFrente(motorA, motorB)
-                listaCor = [-1]
-            cont = 0
-        elif corLida == 6:
-            listaCor = [-1]
-          #  print("Achou cor: " + str(achouACor)+ " Cor lida: "+ str(corLida) + "Sensor infra: "+ str(sensorInfra.value()))
 
 except KeyboardInterrupt:
     motorA.stop()
