@@ -55,6 +55,35 @@ def funcao_saturacao(v):
     else:
         return v
 
+def addListaCor(cont):
+    listaCor.append(corLida)
+    print(listaCor)
+    cont += 1
+
+def setaDicionarioCores(dicioCores,qtdQueViraEsquerda,primeiraCor):
+
+    if qtdQueViraEsquerda == 0:
+        dicioCores[primeiraCor] = "E"
+    elif qtdQueViraEsquerda == 1:
+        dicioCores[primeiraCor] = "F"
+    elif qtdQueViraEsquerda == 2:
+        dicioCores[primeiraCor] = "D"
+    return dicioCores
+
+def contaPreto(qtdViraEsquerda):
+    qtdViraEsquerda += 1
+    print("CONTEI UM PRETO")
+    return qtdQueViraEsquerda
+
+def condicoesAPartirDicionario(dicioCores,listaCor):
+    if dicioCores[moda(listaCor)] == "E":
+        virarEsquerda(motorA, motorB)
+    elif dicioCores[moda(listaCor)] == "D":
+        virarDireita(motorA, motorB)
+    elif dicioCores[moda(listaCor)] == "F":
+        seguirFrente(motorA, motorB)
+    return dicioCores
+
 motorA = LargeMotor('outA')
 motorB = LargeMotor('outB')
 
@@ -64,12 +93,13 @@ MODE_COL_COLOR = 'COL-COLOR'
 
 semCor, preto, azul, verde, vermelho, branco = 0, 1, 2, 3, 5, 6
 CoresValidas = []
+dicioCores = {0: "", 1: "", 2: "", 3: "", 5: "", 6: ""}
 
 corVermelha = "Esquerda"
 corVerde = "Direita"
 corAzul = "Seguir"
 
-offset = 28
+offset = 35
 constProp = 30
 
 qtdQueViraEsquerda = 0
@@ -91,61 +121,31 @@ try:
 
         # Tratamento de transição de cores
 
+        # if corLida == semCor:
+        #     re(motorA,motorB)
+        print(cont)
         if cont < 10 and corLida != 6:
             listaCor.append(corLida)
-            print (listaCor)
-            cont += 1
+            cont +=1
 
         elif corLida == 6:
             listaCor = [-1]
             cont = 0
 
-        elif cont >= 10:
-
+        elif cont > 9:
+            print ("=============ENTREI================= ")
             primeiraCor = moda(listaCor)
 
+            if moda(listaCor) == preto:
+                qtdQueViraEsquerda = contaPreto(qtdQueViraEsquerda)
 
+            if moda(listaCor) != primeiraCor and moda(listaCor) != preto and moda(listaCor) != branco and moda(
+                    listaCor) != semCor:
+                setaDicionarioCores(dicioCores, qtdQueViraEsquerda,primeiraCor)
 
-            if moda(listaCor) != primeiraCor and moda(listaCor) != preto and moda(listaCor) != branco and moda(listaCor) != semCor:
-                print("-------------------------------ENTREI AQUI 1------------------------")
-                achouACor = True
-
-                if qtdQueViraEsquerda == 1:
-                    corVerde = "Esquerda"
-                    print("-------------------------------ENTREI AQUI 6------------------------")
-                elif qtdQueViraEsquerda == 2:
-                    corVerde = "Frente"
-                    print("-------------------------------ENTREI AQUI 7------------------------")
-                elif qtdQueViraEsquerda == 3:
-                    corVerde = "Direita"
-                    print("-------------------------------ENTREI AQUI 8------------------------")
-                listaCor = [-1]
-
-            elif moda(listaCor) == preto:
-                qtdQueViraEsquerda += 1
-                print ("CONTEI UM PRETO")
-
-            # elif moda(listaCor) == verde and achouACor == False:
-            #     print ("-------------------------------ENTREI AQUI 2------------------------")
-            #     print("cor: ", sensorCor.color)
-            #     virarEsquerda(motorA, motorB)
-            #     qtdQueViraEsquerda += 1
-            #     listaCor = [-1]
-            #
-            #
-            # if moda(listaCor) == verde and corVerde == "Esquerda" and achouACor == True:
-            #     print("-------------------------------ENTREI AQUI 3------------------------")
-            #     virarEsquerda(motorA, motorB)
-            #     listaCor = [-1]
-            # if moda(listaCor) == verde and corVerde == "Direita" and achouACor == True:
-            #     print("-------------------------------ENTREI AQUI 4------------------------")
-            #     virarDireita(motorA, motorB)
-            #     listaCor = [-1]
-            # if moda(listaCor) == verde and corVerde == "Frente" and achouACor == True:
-            #     print("-------------------------------ENTREI AQUI 5------------------------")
-            #     seguirFrente(motorA, motorB)
-            #     listaCor = [-1]
-
+            print(dicioCores)
+            # condicoesAPartirDicionario(dicioCores,listaCor)
+            # print(setaDicionarioCores(dicioCores, qtdQueViraEsquerda,primeiraCor))
 
 
 except KeyboardInterrupt:
