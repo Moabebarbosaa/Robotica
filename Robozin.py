@@ -17,10 +17,30 @@ def andar():
     erro = offset - sensorInfra.value()
     giro = erro * constProp
 
-    motorA.run_forever(speed_sp=funcao_saturacao(170 - giro))
-    motorB.run_forever(speed_sp=funcao_saturacao(170 + giro))
+    motorA.run_forever(speed_sp=funcao_saturacao(250 - giro))
+    motorB.run_forever(speed_sp=funcao_saturacao(250 + giro))
 
+def moda(l):
+    repeticoes = 0
+    valor = 0
+    for i in range(len(l)):
+        aparicoes = l.count(l[i])
+        if aparicoes > repeticoes:
+            repeticoes = aparicoes
+            valor = l[i]
 
+    return valor
+
+def transicaoCor():
+    listaCor = []
+    for i in range(50):
+        corLida = sensorCor.color
+        listaCor.append(corLida)
+        motorA.run_forever(speed_sp=200)
+        motorB.run_forever(speed_sp=200)
+
+    MODA = moda(listaCor)
+    return MODA
 
 def virarDireita(motorA, motorB):
     for i in range(700):
@@ -93,8 +113,6 @@ def SaberLado(cor):
 
     return saberGiro(contCorTotal)
 
-
-
 def Acao(acao, motorA, motorB):
     if acao == "Seguir":
         seguirFrente(motorA, motorB)
@@ -130,33 +148,31 @@ try:
         if (corLida == branco or corLida == preto):
             andar()
 
-
-        if (corLida == azul):
-            print("AZUL")
-            if corAzul == "":
-                corAzul = SaberLado(azul)
-            else:
-                Acao(corAzul, motorA, motorB)
-
-
-        if (corLida == verde):
-            print("VERDE")
-            if corVerde == "":
-                print("AQUI")
-                corVerde = SaberLado(verde)
-            else:
-                Acao(corVerde, motorA, motorB)
+        elif (corLida != branco and corLida != preto):
+            corTratada = transicaoCor()
+            # print(corTratada)
+            if (corTratada == azul):
+                print("AZUL")
+                if corAzul == "":
+                    corAzul = SaberLado(azul)
+                else:
+                    Acao(corAzul, motorA, motorB)
 
 
-        if (corLida == vermelho):
-            print("VERMELHO")
-            if corVermelha == "":
-                corVermelha = SaberLado(vermelho)
-            else:
-                Acao(corVermelha, motorA, motorB)
+            if (corTratada == verde):
+                print("VERDE")
+                if corVerde == "":
+                    print("AQUI")
+                    corVerde = SaberLado(verde)
+                else:
+                    Acao(corVerde, motorA, motorB)
 
-
-
+            if (corTratada == vermelho):
+                print("VERMELHO")
+                if corVermelha == "":
+                    corVermelha = SaberLado(vermelho)
+                else:
+                    Acao(corVermelha, motorA, motorB)
 
 except KeyboardInterrupt:
     motorA.stop()
