@@ -33,21 +33,21 @@ def moda(l):
 
 def transicaoCor():
     listaCor = []
-    for i in range(50):
+    for i in range(70):
         corLida = sensorCor.color
         listaCor.append(corLida)
         motorA.run_forever(speed_sp=200)
         motorB.run_forever(speed_sp=200)
 
-    MODA = moda(listaCor)
-    return MODA
+    return moda(listaCor)
 
 def virarDireita(motorA, motorB):
     for i in range(700):
         motorA.run_forever(speed_sp=200)
         motorB.run_forever(speed_sp=200)
 
-    for i in range(500):
+
+    for i in range(550):
         motorA.run_forever(speed_sp=200)
         motorB.run_forever(speed_sp=-200)
 
