@@ -2,7 +2,6 @@
 from ev3dev.ev3 import *
 
 
-
 def funcao_saturacao(v):
     if v > 1000:
         return 1000
@@ -11,8 +10,9 @@ def funcao_saturacao(v):
     else:
         return v
 
+
 def andarSensorEsquerdo():
-    offset = 28
+    offset = 31
     constProp = 0
 
     erro = offset - sensorInfraEsquerdo.value()
@@ -26,54 +26,54 @@ def andarSensorEsquerdo():
 
     giro = erro * constProp
 
-    motorA.run_forever(speed_sp=funcao_saturacao(300 - giro))
-    motorB.run_forever(speed_sp=funcao_saturacao(300 + giro))
-
-
+    motorA.run_forever(speed_sp=funcao_saturacao(225 - giro))
+    motorB.run_forever(speed_sp=funcao_saturacao(225 + giro))
 
 
 def andarSensorDireito():
-    offset = 28
+    offset = 31
     constProp = 24
 
     erro = offset - sensorInfraDireito.value()
     giro = erro * constProp
 
-    motorA.run_forever(speed_sp=funcao_saturacao(300 + giro))
-    motorB.run_forever(speed_sp=funcao_saturacao(300 - giro))
+    motorA.run_forever(speed_sp=funcao_saturacao(225 + giro))
+    motorB.run_forever(speed_sp=funcao_saturacao(225 - giro))
+
 
 
 def virarDireita():
     for i in range(1000):
         andarSensorDireito()
 
+
 def virarEsquerda():
     for i in range(500):
         andarSensorEsquerdo()
 
+
 def seguirFrente():
 
-    if sensorInfraEsquerdo.value() > 30 and sensorInfraEsquerdo.value() < 33:
+    # elif sensorInfraEsquerdo.value() >= 35:
+    #     print("Corrigiu para > 33")
+    #     for i in range(50):
+    #         motorA.run_forever(speed_sp=1000)
+    # elif sensorInfraEsquerdo.value() <= 28:
+    #     for i in range(50):
+    #         motorB.run_forever(speed_sp=1000)
+    #     print("Corrigiu para < 24")
+
+    if sensorInfraEsquerdo.value() > 32:
         print("Corrigiu para > 30")
         for i in range(50):
             motorA.run_forever(speed_sp=600)
 
-    elif sensorInfraEsquerdo.value() >= 33:
-        print("Corrigiu para > 33")
-        for i in range(100):
-            motorA.run_forever(speed_sp=1000)
-
-    elif sensorInfraEsquerdo.value() < 28 and sensorInfraEsquerdo.value() > 24:
+    elif sensorInfraEsquerdo.value() < 30:
         for i in range(50):
             motorB.run_forever(speed_sp=600)
         print("Corrigiu para < 28")
 
-    elif sensorInfraEsquerdo.value() <= 24:
-        for i in range(100):
-            motorB.run_forever(speed_sp=1000)
-        print("Corrigiu para < 24")
-
-    for i in range(800):
+    for i in range(700):
         motorA.run_forever(speed_sp=300)
         motorB.run_forever(speed_sp=300)
     for i in range(100):
@@ -99,6 +99,7 @@ def moda(l):
             valor = l[i]
 
     return valor
+
 
 def verificarCor():
     listaDeCor = []
@@ -141,7 +142,6 @@ def SaberLado(cor):
     return saberGiro(contCorTotal)
 
 
-
 def Acao(acao):
     if acao == "Seguir":
         seguirFrente()
@@ -149,8 +149,6 @@ def Acao(acao):
         virarDireita()
     elif acao == "Esquerda":
         virarEsquerda()
-
-
 
 
 motorA = LargeMotor('outA') # Esquerdo
@@ -176,31 +174,45 @@ try:
         if (corLida == branco or corLida == preto):
             andarSensorEsquerdo()
 
+        cont = 0
+
 
 
         if (corLida == azul):
             print("AZUL")
             if corAzul == "":
                 corAzul = SaberLado(azul)
+                cont += 1
             else:
                 Acao(corAzul)
-
+                cont += 1
 
         if (corLida == verde):
             print("VERDE")
             if corVerde == "":
                 print("AQUI")
+                cont += 1
                 corVerde = SaberLado(verde)
             else:
                 Acao(corVerde)
-
+                cont += 1
 
         if (corLida == vermelho):
             print("VERMELHO")
             if corVermelha == "":
                 corVermelha = SaberLado(vermelho)
+                cont += 1
             else:
                 Acao(corVermelha)
+                cont += 1
+
+        if cont == 6:
+            cont = 0
+            for i in range(200):
+                andarSensorEsquerdo()
+            for i in range(1000):
+                motorA.run_forever(speed_sp=200)
+                motorB.run_forever(speed_sp=-200)
 
 
 
