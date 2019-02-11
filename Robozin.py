@@ -13,25 +13,34 @@ def funcao_saturacao(v):
 
 def andarSensorEsquerdo():
     offset = 28
-    constProp = 30
+    constProp = 0
 
     erro = offset - sensorInfraEsquerdo.value()
+
+
+    if sensorCor.color == 1 or sensorCor.color == 0:
+        constProp = 30
+
+    else:
+        constProp = 24
+
     giro = erro * constProp
 
-    motorA.run_forever(speed_sp=funcao_saturacao(250 - giro))
-    motorB.run_forever(speed_sp=funcao_saturacao(250 + giro))
+    motorA.run_forever(speed_sp=funcao_saturacao(300 - giro))
+    motorB.run_forever(speed_sp=funcao_saturacao(300 + giro))
+
+
+
 
 def andarSensorDireito():
     offset = 28
-    constProp = 30
+    constProp = 24
 
     erro = offset - sensorInfraDireito.value()
     giro = erro * constProp
 
-    motorA.run_forever(speed_sp=funcao_saturacao(250 + giro))
-    motorB.run_forever(speed_sp=funcao_saturacao(250 - giro))
-
-
+    motorA.run_forever(speed_sp=funcao_saturacao(300 + giro))
+    motorB.run_forever(speed_sp=funcao_saturacao(300 - giro))
 
 
 def virarDireita():
@@ -43,11 +52,33 @@ def virarEsquerda():
         andarSensorEsquerdo()
 
 def seguirFrente():
-    for i in range(1300):
-        motorA.run_forever(speed_sp=200)
-        motorB.run_forever(speed_sp=200)
 
+    if sensorInfraEsquerdo.value() > 30 and sensorInfraEsquerdo.value() < 33:
+        print("Corrigiu para > 30")
+        for i in range(50):
+            motorA.run_forever(speed_sp=600)
 
+    elif sensorInfraEsquerdo.value() >= 33:
+        print("Corrigiu para > 33")
+        for i in range(100):
+            motorA.run_forever(speed_sp=1000)
+
+    elif sensorInfraEsquerdo.value() < 28 and sensorInfraEsquerdo.value() > 24:
+        for i in range(50):
+            motorB.run_forever(speed_sp=600)
+        print("Corrigiu para < 28")
+
+    elif sensorInfraEsquerdo.value() <= 24:
+        for i in range(100):
+            motorB.run_forever(speed_sp=1000)
+        print("Corrigiu para < 24")
+
+    for i in range(800):
+        motorA.run_forever(speed_sp=300)
+        motorB.run_forever(speed_sp=300)
+    for i in range(100):
+        andarSensorEsquerdo()
+        andarSensorDireito()
 
 def saberGiro(cont):
     if cont == 1:
@@ -122,8 +153,8 @@ def Acao(acao):
 
 
 
-motorA = LargeMotor('outA')
-motorB = LargeMotor('outB')
+motorA = LargeMotor('outA') # Esquerdo
+motorB = LargeMotor('outB') # Direito
 
 sensorInfraEsquerdo = InfraredSensor("in1")
 sensorInfraDireito = InfraredSensor("in3")
@@ -144,6 +175,7 @@ try:
 
         if (corLida == branco or corLida == preto):
             andarSensorEsquerdo()
+
 
 
         if (corLida == azul):
