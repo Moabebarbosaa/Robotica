@@ -49,42 +49,17 @@ def virarEsquerda():
         andarSensorEsquerdo()
 
 
-def aandarSensorEsquerdo():
-    offset = 29
-
-    erro = offset - sensorInfraEsquerdo.value()
-
-    if sensorCor.color == 1 or sensorCor.color == 0:
-        constProp = 30
-
-    else:
-        constProp = 24
-
-    giro = erro * constProp
-
-    motorA.run_forever(speed_sp=funcao_saturacao(90 - giro))
-    motorB.run_forever(speed_sp=funcao_saturacao(90 + giro))
-
-
-def aandarSensorDireito():
-    offset = 29
-    constProp = 24
-
-    erro = offset - sensorInfraDireito.value()
-    giro = erro * constProp
-
-    motorA.run_forever(speed_sp=funcao_saturacao(90 + giro))
-    motorB.run_forever(speed_sp=funcao_saturacao(90 - giro))
-
 
 def seguirFrente():
     corLida = sensorCor.color
 
-    rotacao = (56-sensorInfraEsquerdo.value())*6
+    rotacao = (57-sensorInfraEsquerdo.value())*6
+
 
     while corLida != semCor:
         motorA.run_forever(speed_sp=-100)
         corLida = sensorCor.color
+
     for i in range(rotacao-3):
         motorB.run_forever(speed_sp=-200)
         motorA.run_forever(speed_sp=200)
