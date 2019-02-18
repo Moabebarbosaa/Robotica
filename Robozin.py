@@ -2,7 +2,6 @@
 from ev3dev.ev3 import *
 
 
-
 def funcao_saturacao(v):
     if v > 1000:
         return 1000
@@ -16,7 +15,6 @@ def andarSensorEsquerdo():
     offset = 28
 
     erro = offset - sensorInfraEsquerdo.value()
-
 
     if sensorCor.color == 1 or sensorCor.color == 0:
         constProp = 30
@@ -50,11 +48,11 @@ def virarEsquerda():
     for i in range(500):
         andarSensorEsquerdo()
 
+
 def aandarSensorEsquerdo():
     offset = 29
 
     erro = offset - sensorInfraEsquerdo.value()
-
 
     if sensorCor.color == 1 or sensorCor.color == 0:
         constProp = 30
@@ -78,21 +76,22 @@ def aandarSensorDireito():
     motorA.run_forever(speed_sp=funcao_saturacao(90 + giro))
     motorB.run_forever(speed_sp=funcao_saturacao(90 - giro))
 
+
 def seguirFrente():
     corLida = sensorCor.color
 
-    rotacao = 114 + (6 * (sensorInfraEsquerdo.value() - 20))
+    rotacao = (56-sensorInfraEsquerdo.value())*6
 
     while corLida != semCor:
         motorA.run_forever(speed_sp=-100)
         corLida = sensorCor.color
+    for i in range(rotacao-3):
+        motorB.run_forever(speed_sp=-200)
+        motorA.run_forever(speed_sp=200)
 
-    for i in range(200):
-        motorB.run_forever(speed_sp=-rotacao)
-        motorA.run_forever(speed_sp=rotacao)
-
-    print(sensorInfraEsquerdo.value())
-    
+    for i in range(850):
+        motorB.run_forever(speed_sp=200)
+        motorA.run_forever(speed_sp=200)
 
 
 def saberGiro(cont):
@@ -115,6 +114,7 @@ def moda(l):
 
     return valor
 
+
 def verificarCor():
     listaDeCor = []
 
@@ -127,7 +127,6 @@ def verificarCor():
 
 
 def SaberLado(cor):
-
     contCor = 0
     contCorTotal = 0
 
@@ -156,7 +155,6 @@ def SaberLado(cor):
     return saberGiro(contCorTotal)
 
 
-
 def Acao(acao):
     if acao == "Seguir":
         seguirFrente()
@@ -166,9 +164,8 @@ def Acao(acao):
         virarEsquerda()
 
 
-
-motorA = LargeMotor('outA') # Esquerdo
-motorB = LargeMotor('outB') # Direito
+motorA = LargeMotor('outA')  # Esquerdo
+motorB = LargeMotor('outB')  # Direito
 
 sensorInfraEsquerdo = InfraredSensor("in1")
 sensorInfraDireito = InfraredSensor("in3")
