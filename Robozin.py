@@ -16,7 +16,7 @@ def andarSensorEsquerdo():
 
     erro = offset - sensorInfraEsquerdo.value()
 
-    if sensorCor.color == 1 or sensorCor.color == 0:
+    if sensorCorEsquerdo.color == 1 or sensorCorEsquerdo.color == 0:
         constProp = 30
 
     else:
@@ -24,8 +24,8 @@ def andarSensorEsquerdo():
 
     giro = erro * constProp
 
-    motorA.run_forever(speed_sp=funcao_saturacao(300 - giro))
-    motorB.run_forever(speed_sp=funcao_saturacao(300 + giro))
+    motorEsquerdo.run_forever(speed_sp=funcao_saturacao(300 - giro))
+    motorDireito.run_forever(speed_sp=funcao_saturacao(300 + giro))
 
 
 def andarSensorDireito():
@@ -35,8 +35,8 @@ def andarSensorDireito():
     erro = offset - sensorInfraDireito.value()
     giro = erro * constProp
 
-    motorA.run_forever(speed_sp=funcao_saturacao(300 + giro))
-    motorB.run_forever(speed_sp=funcao_saturacao(300 - giro))
+    motorEsquerdo.run_forever(speed_sp=funcao_saturacao(300 + giro))
+    motorDireito.run_forever(speed_sp=funcao_saturacao(300 - giro))
 
 
 def virarDireita():
@@ -50,23 +50,19 @@ def virarEsquerda():
 
 
 
-def seguirFrente():
-    corLida = sensorCor.color
+def seguirFrente(cor):
+    corLidaEsquerda = sensorCorEsquerdo.color
+    corLidaDireita = sensorCorDireito.color
 
-    rotacao = (57-sensorInfraEsquerdo.value())*6
+    if corLidaEsquerda == cor:
+        while corLidaDireita != cor:
+            motorEsquerdo.run_forever(speed_sp=100)
+            corLidaDireita = sensorCorEsquerdo.color
 
+    else:
+        while corLidaEsquerda != cor:
+            motorDireito.run_forever(speed_sp=100)
 
-    while corLida != semCor:
-        motorA.run_forever(speed_sp=-100)
-        corLida = sensorCor.color
-
-    for i in range(rotacao-3):
-        motorB.run_forever(speed_sp=-200)
-        motorA.run_forever(speed_sp=200)
-
-    for i in range(850):
-        motorB.run_forever(speed_sp=200)
-        motorA.run_forever(speed_sp=200)
 
 
 def saberGiro(cont):
@@ -94,9 +90,9 @@ def verificarCor():
     listaDeCor = []
 
     for i in range(20):
-        motorA.run_forever(speed_sp=100)
-        motorB.run_forever(speed_sp=100)
-        listaDeCor.append(sensorCor.color)
+        motorEsquerdo.run_forever(speed_sp=100)
+        motorDireito.run_forever(speed_sp=100)
+        listaDeCor.append(sensorCorEsquerdo.color)
 
     return moda(listaDeCor)
 
@@ -108,12 +104,12 @@ def SaberLado(cor):
     coresIndesejadas = [7, 6, 1, 0, 4]
 
     while True:
-        corLida = sensorCor.color
+        corLida = sensorCorEsquerdo.color
         andarSensorEsquerdo()
 
         while (corLida == cor):
             andarSensorEsquerdo()
-            corLida = sensorCor.color
+            corLida = sensorCorEsquerdo.color
             contCor += 1
 
         if contCor > 1:
@@ -132,20 +128,21 @@ def SaberLado(cor):
 
 def Acao(acao):
     if acao == "Seguir":
-        seguirFrente()
+        seguirFrente(acao)
     elif acao == "Direita":
         virarDireita()
     elif acao == "Esquerda":
         virarEsquerda()
 
 
-motorA = LargeMotor('outA')  # Esquerdo
-motorB = LargeMotor('outB')  # Direito
+motorEsquerdo = LargeMotor('outA')
+motorDireito = LargeMotor('outB')
 
 sensorInfraEsquerdo = InfraredSensor("in1")
-sensorInfraDireito = InfraredSensor("in3")
+sensorInfraDireito = InfraredSensor("in2")
 
-sensorCor = ColorSensor("in2")
+sensorCorEsquerdo = ColorSensor("in4")
+sensorCorDireito = ColorSensor("in3")
 MODE_COL_COLOR = 'COL-COLOR'
 
 semCor, preto, azul, verde, vermelho, branco = 0, 1, 2, 3, 5, 6
@@ -157,7 +154,7 @@ corAzul = ""
 try:
     while True:
 
-        corLida = sensorCor.color
+        corLida = sensorCorEsquerdo.color
 
         if corLida == branco or corLida == preto:
             andarSensorEsquerdo()
@@ -187,5 +184,5 @@ try:
 
 
 except KeyboardInterrupt:
-    motorA.stop()
-    motorB.stop()
+    motorEsquerdo.stop()
+    motorDireito.stop()
