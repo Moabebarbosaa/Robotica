@@ -56,3 +56,19 @@ def funcao_saturacao(v):
     else:
         return v
 
+def andarSensoresquerdo():
+    offset = 4
+
+    erro = offset - sensorInfraEsquerdo.value()
+
+    constProp = 24
+
+    giro = erro * constProp
+
+    if erro > 4:
+        motorEsquerdo.run_forever(speed_sp=funcao_saturacao(100 + giro))
+        motorDireito.run_forever(speed_sp=funcao_saturacao(1250 - giro))
+    elif erro < 4:
+        motorEsquerdo.run_forever(speed_sp=funcao_saturacao(200 + giro))
+        motorDireito.run_forever(speed_sp=funcao_saturacao(200 - giro))
+
