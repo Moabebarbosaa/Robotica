@@ -1,3 +1,7 @@
+#!/usr/bin/env python3
+from ev3dev.ev3 import *
+
+
 def sair_Quadrado():
     cont = 0
     while cont <= 4:
@@ -18,12 +22,11 @@ def sair_Quadrado():
                 motorEsquerdo.run_forever(speed_sp=300)
                 motorDireito.run_forever(speed_sp=300)
             else:
-                andarSensoresquerdo()
+                andarSensorEsquerdo(1)
         cont += 1
 
     while True:
-        andarSensoresquerdo()
-
+        andarSensorEsquerdo(1)
 
 
 def funcao_saturacao(v):
@@ -34,19 +37,27 @@ def funcao_saturacao(v):
     else:
         return v
 
+def andarSensorEsquerdo(modo):
+    if modo == 0:
+        offset = 28
+        constProp = 30
 
-def andarSensoresquerdo():
-    offset = 4
+        erro = offset - sensorInfraEsquerdo.value()
+        giro = erro * constProp
 
-    erro = offset - sensorInfraEsquerdo.value()
+        motorEsquerdo.run_forever(speed_sp=funcao_saturacao(200 - giro))
+        motorDireito.run_forever(speed_sp=funcao_saturacao(200 + giro))
 
-    constProp = 24
+    else:
+        offset = 4
+        constProp = 24
 
-    giro = erro * constProp
+        erro = offset - sensorInfraEsquerdo.value()
+        giro = erro * constProp
 
-    if erro > 4:
-        motorEsquerdo.run_forever(speed_sp=funcao_saturacao(100 + giro))
-        motorDireito.run_forever(speed_sp=funcao_saturacao(1250 - giro))
-    elif erro < 4:
-        motorEsquerdo.run_forever(speed_sp=funcao_saturacao(200 + giro))
-        motorDireito.run_forever(speed_sp=funcao_saturacao(200 - giro))
+        if erro > 4:
+            motorEsquerdo.run_forever(speed_sp=funcao_saturacao(100 + giro))
+            motorDireito.run_forever(speed_sp=funcao_saturacao(1250 - giro))
+        elif erro < 4:
+            motorEsquerdo.run_forever(speed_sp=funcao_saturacao(200 + giro))
+            motorDireito.run_forever(speed_sp=funcao_saturacao(200 - giro))
