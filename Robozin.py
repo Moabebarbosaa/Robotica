@@ -160,14 +160,11 @@ corVermelha = ""
 corVerde = ""
 corAzul = ""
 
-
 indo_voltando = True
-
-
 
 contCoresAzul = 0
 primeiraCorLida = 0
-
+cont = 0
 
 try:
     while True:
@@ -179,39 +176,37 @@ try:
 
         if corLida == azul:
             if corAzul == "":
-                contCoresAzul += 1
+                cont += 1
                 corAzul = SaberLado(azul)
-                if primeiraCorLida == 0:
-                    primeiraCorLida = azul
             else:
-                contCoresAzul += 1
+                cont += 1
                 Acao(corAzul, azul)
 
         if corLida == verde:
             if corVerde == "":
                 corVerde = SaberLado(verde)
-                if primeiraCorLida == 0:
-                    primeiraCorLida = azul
+                cont += 1
             else:
-                contCoresAzul += 1
+                cont += 1
                 Acao(corVerde, verde)
 
         if corLida == vermelho:
             if corVermelha == "":
+                cont += 1
                 corVermelha = SaberLado(vermelho)
-                if primeiraCorLida == 0:
-                    primeiraCorLida = azul
             else:
+                cont += 1
                 Acao(corVermelha, vermelho)
 
 
-        # if indo_voltando == True:
-        #     if contCoresAzul == 3:
-        #         print("FINAL")
-        #         for i in range(600):
-        #             motorEsquerdo.run_forever(speed_sp=200)
-        #             motorDireito.run_forever(speed_sp=200)
-
+        
+        if contCoresAzul == 7:
+            print("FINAL")
+            for i in range(600):
+                motorEsquerdo.run_forever(speed_sp=200)
+                motorDireito.run_forever(speed_sp=200)
+            
+            
 
 except KeyboardInterrupt:
     motorEsquerdo.stop()
