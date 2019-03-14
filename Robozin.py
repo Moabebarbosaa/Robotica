@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from ev3dev.ev3 import *
 
+
 def funcao_saturacao(v):
     if v > 1000:
         return 1000
@@ -8,6 +9,7 @@ def funcao_saturacao(v):
         return -1000
     else:
         return v
+
 def andarSensorEsquerdo():
     offset = 28
 
@@ -16,18 +18,20 @@ def andarSensorEsquerdo():
 
     giro = erro * constProp
 
-    motorEsquerdo.run_forever(speed_sp=funcao_saturacao(200 - giro))
-    motorDireito.run_forever(speed_sp=funcao_saturacao(200 + giro))
+    motorEsquerdo.run_forever(speed_sp=funcao_saturacao(250 - giro))
+    motorDireito.run_forever(speed_sp=funcao_saturacao(250 + giro))
 
 def andarSensorDireito():
     offset = 28
-    constProp = 24
+    constProp = 30
 
     erro = offset - sensorInfraDireito.value()
     giro = erro * constProp
 
     motorEsquerdo.run_forever(speed_sp=funcao_saturacao(200 + giro))
     motorDireito.run_forever(speed_sp=funcao_saturacao(200 - giro))
+
+
 
 def virarDireita():
     for i in range(1200):
@@ -38,7 +42,7 @@ def virarEsquerda():
         andarSensorEsquerdo()
 
 def alinhar(cor):
-    while sensorCorDireito.value() != branco:
+    while sensorCorDireito.value() == cor:
         if sensorCorDireito.color == cor:
             motorDireito.run_forever(speed_sp=-100)
             motorEsquerdo.run_forever(speed_sp=50)
@@ -47,7 +51,7 @@ def alinhar(cor):
             motorEsquerdo.run_forever(speed_sp=-100)
             motorDireito.run_forever(speed_sp=50)
 
-    while sensorCorEsquerdo.value() != branco:
+    while sensorCorEsquerdo.value() == cor:
         if sensorCorDireito.color == cor:
             motorDireito.run_forever(speed_sp=-100)
             motorEsquerdo.run_forever(speed_sp=50)
@@ -57,11 +61,12 @@ def alinhar(cor):
             motorDireito.run_forever(speed_sp=50)
 
 def seguirFrente(cor):
-    print("SSSSSS")
+    print("Seguir em frente!")
     alinhar(cor)
     for i in range(900):
         motorEsquerdo.run_forever(speed_sp=300)
         motorDireito.run_forever(speed_sp=300)
+
 
 def saberGiro(cont):
     if cont == 1:
@@ -100,18 +105,18 @@ def SaberLado(cor):
 
     ultimaCOR = 0
 
+    global constanteGiroscopio
+
     while True:
         corLida = sensorCorEsquerdo.color
         andarSensorEsquerdo()
 
         if ultimaCOR == corLida:
             if verificarCor() == ultimaCOR:
-                #print("ULTIMA COR == COR LIDA:", contCorTotal)
                 return saberGiro(contCorTotal)
 
         if corLida != cor and corLida not in coresIndesejadas:
             if verificarCor() == corLida:
-                #print("ENTROU AQUI: ", contCorTotal)
                 return saberGiro(contCorTotal)
 
         while (corLida == cor):
@@ -123,13 +128,11 @@ def SaberLado(cor):
         if contCor > 1:
             contCorTotal += 1
             contCor = 0
-            #print("ContCorTotal: ", contCorTotal)
 
         while corLida == preto or corLida == semCor:
             andarSensorEsquerdo()
             ultimaCOR = preto
             corLida = sensorCorEsquerdo.color
-
 
 def Acao(acao, cor):
     if acao == "Seguir":
@@ -138,6 +141,7 @@ def Acao(acao, cor):
         virarDireita()
     elif acao == "Esquerda":
         virarEsquerda()
+
 
 motorEsquerdo = LargeMotor('outA')
 motorDireito = LargeMotor('outB')
@@ -150,16 +154,20 @@ sensorCorDireito = ColorSensor("in4")
 sensorCorEsquerdo.mode = 'COL-COLOR'
 sensorCorDireito.mode = 'COL-COLOR'
 
-giroscopio = GyroSensor("in3")
-giroscopio.mode = 'GYRO-ANG'
-
 semCor, preto, azul, verde, vermelho, branco = 0, 1, 2, 3, 5, 6
 
 corVermelha = ""
 corVerde = ""
 corAzul = ""
 
-anglo = 0
+
+indo_voltando = True
+
+
+
+contCoresAzul = 0
+primeiraCorLida = 0
+
 
 try:
     while True:
@@ -171,29 +179,39 @@ try:
 
         if corLida == azul:
             if corAzul == "":
+                contCoresAzul += 1
                 corAzul = SaberLado(azul)
-                anglo = giroscopio.value()
+                if primeiraCorLida == 0:
+                    primeiraCorLida = azul
             else:
+                contCoresAzul += 1
                 Acao(corAzul, azul)
-                anglo = giroscopio.value()
 
         if corLida == verde:
             if corVerde == "":
                 corVerde = SaberLado(verde)
-                anglo = giroscopio.value()
+                if primeiraCorLida == 0:
+                    primeiraCorLida = azul
             else:
+                contCoresAzul += 1
                 Acao(corVerde, verde)
-                anglo = giroscopio.value()
 
         if corLida == vermelho:
             if corVermelha == "":
                 corVermelha = SaberLado(vermelho)
-                anglo = giroscopio.value()
+                if primeiraCorLida == 0:
+                    primeiraCorLida = azul
             else:
                 Acao(corVermelha, vermelho)
-                anglo = giroscopio.value()
 
-        
+
+        # if indo_voltando == True:
+        #     if contCoresAzul == 3:
+        #         print("FINAL")
+        #         for i in range(600):
+        #             motorEsquerdo.run_forever(speed_sp=200)
+        #             motorDireito.run_forever(speed_sp=200)
+
 
 except KeyboardInterrupt:
     motorEsquerdo.stop()
