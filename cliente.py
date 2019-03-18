@@ -2,21 +2,12 @@
 
 import paho.mqtt.client as mqtt
 from ev3dev.ev3 import *
-from sys import excepthook
 
-ultra = False
+ultra = 0.0
 MOTOR = LargeMotor("outA")
 
 client = mqtt.Client()
-
-client.connect("169.254.248.207", 1883, 60)
-
-def exception_handle(exctype, value, tb):
-    print("Type:", exctype)
-    print("Value:", value)
-    print("Traceback:", tb)
-
-excepthook = exception_handle
+client.connect("169.254.16.248", 1883, 60)
 
 def on_connect(client, userdata, flags, rc):
     client.subscribe([("topic/teste", 0)])
@@ -29,12 +20,6 @@ def on_message(client, userdata, msg):
 
     if msg.topic == "topic/teste":
         ultra = float(msg.payload)
-
-def capturaSensor(valor):
-    if int(valor) < 60:
-        MOTOR.run_forever(speed_sp=200)
-    elif int(valor) >= 60:
-        MOTOR.stop()
 
 def andar():
     global ultra
