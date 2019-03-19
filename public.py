@@ -14,7 +14,10 @@ def on_disconnect(client, userdata, rc=0):
 
 client.on_disconnect = on_disconnect
 
+DISTANCIA_PERMITIDA = 20
+
 while True:
     distancia1 = ULTRA1.value() / 10
 
-    client.publish(topic="topic/teste", payload=distancia1, qos=0, retain=False)
+    if distancia1 < DISTANCIA_PERMITIDA:
+        client.publish(topic="topic/teste", payload=distancia1, qos=0, retain=False)
