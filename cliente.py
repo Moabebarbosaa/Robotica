@@ -7,7 +7,7 @@ ultra = 0.0
 MOTOR = LargeMotor("outA")
 
 client = mqtt.Client()
-client.connect("169.254.16.248", 1883, 60)
+client.connect("169.254.74.170", 1883, 60)
 
 def on_connect(client, userdata, flags, rc):
     client.subscribe([("topic/teste", 0)])
@@ -23,6 +23,9 @@ def on_message(client, userdata, msg):
 
 def andar():
     global ultra
+
+    if ultra < 30.0:
+        MOTOR.run_forever(speed_sp = 200)
 
     print (ultra)
 
