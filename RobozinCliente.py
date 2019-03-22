@@ -252,10 +252,10 @@ def main():
         #         for i in range(600):
         #             motorEsquerdo.run_forever(speed_sp=200)
         #             motorDireito.run_forever(speed_sp=200)
-            print ("Antes ultra: ",ultra)
+            print(ultra)
             if ultra == True:
                 andar()
-            print("\n\n\n\nDepois ultra: ", ultra)
+
 
 
             # sleep(1)
