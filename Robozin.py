@@ -45,18 +45,19 @@ def sair_Quadrado():
         if sensorCorEsquerdo.value() == verde:
             while sensorCorDireito.value()!= verde:
                 motorDireito.run_forever(speed_sp=100)
-                motorEsquerdo.run_forever(speed_sp=-20)
+                motorEsquerdo.run_forever(speed_sp=30)
                 if sensorCorDireito.value() == verde:
                     break
+            while sensorCorDireito.value() != vermelho:
+                motorDireito.run_forever(speed_sp=100)
+                motorEsquerdo.run_forever(speed_sp=30)
 
-            alinhar(verde)
-            # while sensorCorEsquerdo.value() != branco:
-            #     motorEsquerdo.run_forever(speed_sp=-100)
-            #     motorDireito.run_forever(speed_sp=20)
+            while sensorCorDireito.value() != azul:
+                motorDireito.run_forever(speed_sp=100)
 
-            while True:
-                motorEsquerdo.stop()
-                motorDireito.stop()
+
+            seguirFrente(azul)
+
 
         else:
             andarSensoresquerdo()
@@ -78,25 +79,28 @@ def andarSensoresquerdo():
 
 
 def andarSensorEsquerdo():
-    offset = 30
+    offset = 31
 
-    constProp = 30
+    constProp = 50
     erro = offset - sensorInfraEsquerdo.value()
 
     giro = constProp * erro
-
-    motorEsquerdo.run_forever(speed_sp=funcao_saturacao(200 - giro))
-    motorDireito.run_forever(speed_sp=funcao_saturacao(200 + giro))
+    if sensorCorEsquerdo.value() == preto:
+        motorEsquerdo.run_forever(speed_sp=funcao_saturacao(300 - giro))
+        motorDireito.run_forever(speed_sp=funcao_saturacao(300 + giro))
+    else:
+        motorEsquerdo.run_forever(speed_sp=funcao_saturacao(400 - giro))
+        motorDireito.run_forever(speed_sp=funcao_saturacao(400 + giro))
 
 def andarSensorDireito():
-    offset = 30
-    constProp = 30
+    offset = 28
+    constProp = 50
 
     erro = offset - sensorInfraDireito.value()
     giro = erro * constProp
 
-    motorEsquerdo.run_forever(speed_sp=funcao_saturacao(200 + giro))
-    motorDireito.run_forever(speed_sp=funcao_saturacao(200 - giro))
+    motorEsquerdo.run_forever(speed_sp=funcao_saturacao(400 + giro))
+    motorDireito.run_forever(speed_sp=funcao_saturacao(400 - giro))
 
 
 def virarDireita():
@@ -108,26 +112,33 @@ def virarEsquerda():
         andarSensorEsquerdo()
 
 def alinhar(cor):
-    while sensorCorDireito.value() == cor:
-        if sensorCorDireito.color != branco:
+    while sensorCorEsquerdo.value() == cor:
+        print(11111)
+        if sensorCorDireito.value() != branco:
             motorDireito.run_forever(speed_sp=-100)
             motorEsquerdo.run_forever(speed_sp=50)
 
-        if sensorCorEsquerdo.color != branco:
+        if sensorCorEsquerdo.value() != branco:
             motorEsquerdo.run_forever(speed_sp=-100)
             motorDireito.run_forever(speed_sp=50)
 
-    while sensorCorEsquerdo.value() == cor:
-        if sensorCorDireito.color != branco:
+    while sensorCorDireito.value() == cor:
+        print(2222222)
+        if sensorCorDireito.value() != branco:
             motorDireito.run_forever(speed_sp=-100)
             motorEsquerdo.run_forever(speed_sp=50)
 
-        if sensorCorEsquerdo.color != branco:
+        if sensorCorEsquerdo.value() != branco:
             motorEsquerdo.run_forever(speed_sp=-100)
             motorDireito.run_forever(speed_sp=50)
 
 def seguirFrente(cor):
     print("Seguir em frente!")
+
+    for i in range(150):
+        motorEsquerdo.run_forever(speed_sp=-300)
+        motorDireito.run_forever(speed_sp=-300)
+
     alinhar(cor)
     for i in range(900):
         motorEsquerdo.run_forever(speed_sp=300)
@@ -247,14 +258,12 @@ contCores = 0
 try:
     while True:
 
-        sair_Quadrado()
-
-        while True:
-            motorEsquerdo.stop()
-
-            motorDireito.stop()
-
         corLida = sensorCorEsquerdo.color
+
+        print("Cor verde: ", corVerde)
+        print("Cor vermelha: ", corVermelha)
+        print("Cor azul: ", corAzul)
+
 
         if indo_voltando == True:
             if contCores == 6 and corLida == azul:
