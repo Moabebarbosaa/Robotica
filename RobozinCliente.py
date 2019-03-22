@@ -162,16 +162,9 @@ def on_message(client, userdata, msg):
     if msg.topic == "topic/teste":
         ultra = float(msg.payload)
 
-def andar():
-    global ultra
-
-    if ultra < 30.0:
-        motorBoneco.run_forever(speed_sp = 200)
-
-    print (ultra)
 
 client = mqtt.Client()
-client.connect("169.254.74.170", 1883, 60)
+client.connect("169.254.19.40", 1883, 60)
 
 
 
@@ -179,7 +172,7 @@ client.connect("169.254.74.170", 1883, 60)
 
 motorEsquerdo = LargeMotor('outA')
 motorDireito = LargeMotor('outB')
-motorBoneco = LargeMotor('outC')
+motorBoneco = LargeMotor('outD')
 
 sensorInfraEsquerdo = InfraredSensor("in1")
 sensorInfraDireito = InfraredSensor("in3")
@@ -191,19 +184,19 @@ sensorCorDireito.mode = 'COL-COLOR'
 
 semCor, preto, azul, verde, vermelho, branco = 0, 1, 2, 3, 5, 6
 
-corVermelha = ""
-corVerde = ""
-corAzul = ""
-
 indo_voltando = True
 
 contCoresAzul = 0
 primeiraCorLida = 0
-cont = 0
 
-ultra = 0.0
+ultra = 100.0
 
 def main():
+    corVermelha = ""
+    corVerde = ""
+    corAzul = ""
+
+    cont = 0
 
     try:
         client.on_connect = on_connect
@@ -212,41 +205,52 @@ def main():
 
 
         while True:
+        #
+        #     corLida = sensorCorEsquerdo.color
+        #
+        #     if corLida == branco or corLida == preto:
+        #         andarSensorEsquerdo()
+        #
+        #     if corLida == azul:
+        #         if corAzul == "":
+        #             cont += 1
+        #             corAzul = SaberLado(azul)
+        #         else:
+        #             cont += 1
+        #             Acao(corAzul, azul)
+        #
+        #     if corLida == verde:
+        #         if corVerde == "":
+        #             corVerde = SaberLado(verde)
+        #             cont += 1
+        #         else:
+        #             cont += 1
+        #             Acao(corVerde, verde)
+        #
+        #     if corLida == vermelho:
+        #         if corVermelha == "":
+        #             cont += 1
+        #             corVermelha = SaberLado(vermelho)
+        #         else:
+        #             cont += 1
+        #             Acao(corVermelha, vermelho)
+        #
+        #     if contCoresAzul == 7:
+        #         print("FINAL")
+        #         for i in range(600):
+        #             motorEsquerdo.run_forever(speed_sp=200)
+        #             motorDireito.run_forever(speed_sp=200)
 
-            corLida = sensorCorEsquerdo.color
+            if ultra < 30.0:
+                for i in range(100):
+                    motorBoneco.run_forever(speed_sp=-200)
+            elif ultra > 30.0:
+                for i in range(100):
+                    motorBoneco.run_forever(speed_sp=200)
+            print(ultra)
 
-            if corLida == branco or corLida == preto:
-                andarSensorEsquerdo()
 
-            if corLida == azul:
-                if corAzul == "":
-                    cont += 1
-                    corAzul = SaberLado(azul)
-                else:
-                    cont += 1
-                    Acao(corAzul, azul)
 
-            if corLida == verde:
-                if corVerde == "":
-                    corVerde = SaberLado(verde)
-                    cont += 1
-                else:
-                    cont += 1
-                    Acao(corVerde, verde)
-
-            if corLida == vermelho:
-                if corVermelha == "":
-                    cont += 1
-                    corVermelha = SaberLado(vermelho)
-                else:
-                    cont += 1
-                    Acao(corVermelha, vermelho)
-
-            if contCoresAzul == 7:
-                print("FINAL")
-                for i in range(600):
-                    motorEsquerdo.run_forever(speed_sp=200)
-                    motorDireito.run_forever(speed_sp=200)
 
     except KeyboardInterrupt:
         motorEsquerdo.stop()
