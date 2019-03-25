@@ -25,7 +25,7 @@ def sair_Quadrado():
         posicao_motor_D = motorDireito.position
         posicao_motor_E = motorEsquerdo.position
         if cont == 0 or cont == 2 or cont == 4:
-            qtd = 500
+            qtd = 400
         else:
             qtd = 1750
 
@@ -58,7 +58,7 @@ def sair_Quadrado():
 
 
             seguirFrente(azul)
-
+            break
 
         else:
             andarSensoresquerdo()
@@ -80,25 +80,21 @@ def andarSensoresquerdo():
 
 
 def andarSensorEsquerdo():
-    offset = 31
+    offset = 28
 
     constProp = 50
     erro = offset - sensorInfraEsquerdo.value()
 
     giro = constProp * erro
-
-    if ultra == True:
-        levantaMotorBoneco()
-
     if sensorCorEsquerdo.value() == preto:
-        motorEsquerdo.run_forever(speed_sp=funcao_saturacao(300 - giro))
-        motorDireito.run_forever(speed_sp=funcao_saturacao(300 + giro))
+        motorEsquerdo.run_forever(speed_sp=funcao_saturacao(500 - giro))
+        motorDireito.run_forever(speed_sp=funcao_saturacao(500 + giro))
     else:
         motorEsquerdo.run_forever(speed_sp=funcao_saturacao(400 - giro))
         motorDireito.run_forever(speed_sp=funcao_saturacao(400 + giro))
 
 def andarSensorDireito():
-    offset = 28
+    offset = 29
     constProp = 50
 
     erro = offset - sensorInfraDireito.value()
@@ -109,45 +105,36 @@ def andarSensorDireito():
 
 
 def virarDireita():
-    for i in range(1000):
+    for i in range(500):
         andarSensorDireito()
 
 def virarEsquerda():
     for i in range(600):
         andarSensorEsquerdo()
 
+
 def alinhar(cor):
-    while sensorCorEsquerdo.value() == cor:
-        print(11111)
+    while sensorCorEsquerdo.value() == cor or sensorCorDireito.value() == cor:
+
         if sensorCorDireito.value() != branco:
-            motorDireito.run_forever(speed_sp=-100)
-            motorEsquerdo.run_forever(speed_sp=50)
+            motorDireito.run_forever(speed_sp=-80)
+            motorEsquerdo.run_forever(speed_sp=80)
 
         if sensorCorEsquerdo.value() != branco:
-            motorEsquerdo.run_forever(speed_sp=-100)
-            motorDireito.run_forever(speed_sp=50)
+            motorEsquerdo.run_forever(speed_sp=-80)
+            motorDireito.run_forever(speed_sp=80)
 
-    while sensorCorDireito.value() == cor:
-        print(2222222)
-        if sensorCorDireito.value() != branco:
-            motorDireito.run_forever(speed_sp=-100)
-            motorEsquerdo.run_forever(speed_sp=50)
-
-        if sensorCorEsquerdo.value() != branco:
-            motorEsquerdo.run_forever(speed_sp=-100)
-            motorDireito.run_forever(speed_sp=50)
+    # while True:
+    #     motorDireito.stop()
+    #     motorEsquerdo.stop()
 
 def seguirFrente(cor):
     print("Seguir em frente!")
 
-    for i in range(150):
-        motorEsquerdo.run_forever(speed_sp=-300)
-        motorDireito.run_forever(speed_sp=-300)
-
     alinhar(cor)
-    for i in range(900):
-        motorEsquerdo.run_forever(speed_sp=300)
-        motorDireito.run_forever(speed_sp=300)
+    for i in range(1000):
+        motorDireito.run_forever(speed_sp=210)
+        motorEsquerdo.run_forever(speed_sp=200)
 
 
 
@@ -237,15 +224,6 @@ def Acao(acao, cor):
     elif acao == "Esquerda":
         virarEsquerda()
 
-def levantaMotorBoneco():
-    global ultra
-    for i in range(100):
-        motorBoneco.run_forever(speed_sp=200)
-    for i in range(300):
-        motorBoneco.run_forever(speed_sp=-200)
-    ultra = False
-    motorBoneco.stop()
-
 def on_connect(client, userdata, flags, rc):
     client.subscribe([("topic/teste", 0)])
 
@@ -263,21 +241,27 @@ client.connect("169.254.113.121", 1883, 60)
 
 motorEsquerdo = LargeMotor('outA')
 motorDireito = LargeMotor('outB')
-motorBoneco = LargeMotor('outD')
+motorTampa = LargeMotor('outC')
 
-sensorInfraEsquerdo = InfraredSensor("in1")
-sensorInfraDireito = InfraredSensor("in3")
+giroscopio = GyroSensor('in1')
+ultrassonico = UltrasonicSensor('in2')
 
-sensorCorEsquerdo = ColorSensor("in2")
-sensorCorDireito = ColorSensor("in4")
-sensorCorEsquerdo.mode = 'COL-COLOR'
-sensorCorDireito.mode = 'COL-COLOR'
+
+sensorInfraEsquerdo = InfraredSensor("in3")
+sensorInfraDireito = InfraredSensor("in4")
+
+
 
 semCor, preto, azul, verde, vermelho, branco = 0, 1, 2, 3, 5, 6
 
+corVermelha = ""
+corVerde = ""
+corAzul = ""
+
 indo_voltando = True
 
-ultra = False
+contCores = 0
+
 
 def main():
 
