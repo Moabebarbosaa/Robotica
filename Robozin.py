@@ -24,7 +24,7 @@ def sair_Quadrado():
         posicao_motor_D = motorDireito.position
         posicao_motor_E = motorEsquerdo.position
         if cont == 0 or cont == 2 or cont == 4:
-            qtd = 500
+            qtd = 400
         else:
             qtd = 1750
 
@@ -57,7 +57,7 @@ def sair_Quadrado():
 
 
             seguirFrente(azul)
-
+            break
 
         else:
             andarSensoresquerdo()
@@ -79,21 +79,21 @@ def andarSensoresquerdo():
 
 
 def andarSensorEsquerdo():
-    offset = 31
+    offset = 28
 
     constProp = 50
     erro = offset - sensorInfraEsquerdo.value()
 
     giro = constProp * erro
     if sensorCorEsquerdo.value() == preto:
-        motorEsquerdo.run_forever(speed_sp=funcao_saturacao(300 - giro))
-        motorDireito.run_forever(speed_sp=funcao_saturacao(300 + giro))
+        motorEsquerdo.run_forever(speed_sp=funcao_saturacao(500 - giro))
+        motorDireito.run_forever(speed_sp=funcao_saturacao(500 + giro))
     else:
         motorEsquerdo.run_forever(speed_sp=funcao_saturacao(400 - giro))
         motorDireito.run_forever(speed_sp=funcao_saturacao(400 + giro))
 
 def andarSensorDireito():
-    offset = 28
+    offset = 29
     constProp = 50
 
     erro = offset - sensorInfraDireito.value()
@@ -104,45 +104,36 @@ def andarSensorDireito():
 
 
 def virarDireita():
-    for i in range(1000):
+    for i in range(500):
         andarSensorDireito()
 
 def virarEsquerda():
     for i in range(600):
         andarSensorEsquerdo()
 
+
 def alinhar(cor):
-    while sensorCorEsquerdo.value() == cor:
-        print(11111)
+    while sensorCorEsquerdo.value() == cor or sensorCorDireito.value() == cor:
+
         if sensorCorDireito.value() != branco:
-            motorDireito.run_forever(speed_sp=-100)
-            motorEsquerdo.run_forever(speed_sp=50)
+            motorDireito.run_forever(speed_sp=-80)
+            motorEsquerdo.run_forever(speed_sp=80)
 
         if sensorCorEsquerdo.value() != branco:
-            motorEsquerdo.run_forever(speed_sp=-100)
-            motorDireito.run_forever(speed_sp=50)
+            motorEsquerdo.run_forever(speed_sp=-80)
+            motorDireito.run_forever(speed_sp=80)
 
-    while sensorCorDireito.value() == cor:
-        print(2222222)
-        if sensorCorDireito.value() != branco:
-            motorDireito.run_forever(speed_sp=-100)
-            motorEsquerdo.run_forever(speed_sp=50)
-
-        if sensorCorEsquerdo.value() != branco:
-            motorEsquerdo.run_forever(speed_sp=-100)
-            motorDireito.run_forever(speed_sp=50)
+    # while True:
+    #     motorDireito.stop()
+    #     motorEsquerdo.stop()
 
 def seguirFrente(cor):
     print("Seguir em frente!")
 
-    for i in range(150):
-        motorEsquerdo.run_forever(speed_sp=-300)
-        motorDireito.run_forever(speed_sp=-300)
-
     alinhar(cor)
-    for i in range(900):
-        motorEsquerdo.run_forever(speed_sp=300)
-        motorDireito.run_forever(speed_sp=300)
+    for i in range(1000):
+        motorDireito.run_forever(speed_sp=210)
+        motorEsquerdo.run_forever(speed_sp=200)
 
 
 
@@ -263,6 +254,8 @@ try:
         print("Cor verde: ", corVerde)
         print("Cor vermelha: ", corVermelha)
         print("Cor azul: ", corAzul)
+        print("Indo ou voltando: ", indo_voltando)
+        print("Contador de Cores: ", contCores)
 
 
         if indo_voltando == True:
