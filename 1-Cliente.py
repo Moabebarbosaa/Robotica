@@ -63,7 +63,6 @@ def sair_Quadrado():
         else:
             andarSensoresquerdo()
 
-
 def andarSensoresquerdo():
     offset =8
     constProp = 30
