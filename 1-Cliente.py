@@ -13,7 +13,7 @@ def funcao_saturacao(v):
 def sair_Quadrado():
     cont = 0
 
-    while sensorCorEsquerdo.value() != preto:
+    while sensorCorEsquerdo != preto:
         motorEsquerdo.run_forever(speed_sp=200)
         motorDireito.run_forever(speed_sp=200)
 
@@ -43,17 +43,17 @@ def sair_Quadrado():
         cont += 1
 
     while True:
-        if sensorCorEsquerdo.value() == verde:
-            while sensorCorDireito.value()!= verde:
+        if sensorCorEsquerdo == verde:
+            while sensorCorDireito!= verde:
                 motorDireito.run_forever(speed_sp=100)
                 motorEsquerdo.run_forever(speed_sp=30)
-                if sensorCorDireito.value() == verde:
+                if sensorCorDireito == verde:
                     break
-            while sensorCorDireito.value() != vermelho:
+            while sensorCorDireito != vermelho:
                 motorDireito.run_forever(speed_sp=100)
                 motorEsquerdo.run_forever(speed_sp=30)
 
-            while sensorCorDireito.value() != azul:
+            while sensorCorDireito != azul:
                 motorDireito.run_forever(speed_sp=100)
 
 
@@ -86,7 +86,7 @@ def andarSensorEsquerdo():
     erro = offset - sensorInfraEsquerdo.value()
 
     giro = constProp * erro
-    if sensorCorEsquerdo.value() == preto:
+    if sensorCorEsquerdo == preto:
         motorEsquerdo.run_forever(speed_sp=funcao_saturacao(500 - giro))
         motorDireito.run_forever(speed_sp=funcao_saturacao(500 + giro))
     else:
@@ -114,13 +114,16 @@ def virarEsquerda():
 
 
 def alinhar(cor):
-    while sensorCorEsquerdo.value() == cor or sensorCorDireito.value() == cor:
 
-        if sensorCorDireito.value() != branco:
+    global sensorCorEsquerdo, sensorCorDireito
+
+    while sensorCorEsquerdo == cor or sensorCorDireito == cor:
+
+        if sensorCorDireito != branco:
             motorDireito.run_forever(speed_sp=-80)
             motorEsquerdo.run_forever(speed_sp=80)
 
-        if sensorCorEsquerdo.value() != branco:
+        if sensorCorEsquerdo != branco:
             motorEsquerdo.run_forever(speed_sp=-80)
             motorDireito.run_forever(speed_sp=80)
 
@@ -159,17 +162,23 @@ def moda(l):
     return valor
 
 def verificarCor():
+
+    global sensorCorEsquerdo, sensorCorDireito
+
     listaDeCor = []
 
     for i in range(20):
         motorEsquerdo.run_forever(speed_sp=100)
         motorDireito.run_forever(speed_sp=100)
-        listaDeCor.append(sensorCorEsquerdo.color)
+        listaDeCor.append(sensorCorEsquerdo)
 
     return moda(listaDeCor)
 
 
 def SaberLado(cor):
+
+    global sensorCorEsquerdo, sensorCorDireito
+
     contCor = 0
     contCorTotal = 0
 
@@ -178,7 +187,7 @@ def SaberLado(cor):
     ultimaCOR = 0
 
     while True:
-        corLida = sensorCorEsquerdo.color
+        corLida = sensorCorEsquerdo
         andarSensorEsquerdo()
 
         if ultimaCOR == corLida and corLida != preto:
@@ -191,7 +200,7 @@ def SaberLado(cor):
 
         while corLida == cor:
             andarSensorEsquerdo()
-            corLida = sensorCorEsquerdo.color
+            corLida = sensorCorEsquerdo
             contCor += 1
             ultimaCOR = cor
 
@@ -202,7 +211,7 @@ def SaberLado(cor):
         while corLida == preto or corLida == semCor:
             andarSensorEsquerdo()
             ultimaCOR = preto
-            corLida = sensorCorEsquerdo.color
+            corLida = sensorCorEsquerdo
 
 
 def mudarSentidos(cor):
@@ -213,9 +222,6 @@ def mudarSentidos(cor):
     else:
         return "Esquerda"
 
-
-
-
 def Acao(acao, cor):
     if acao == "Seguir":
         seguirFrente(cor)
@@ -225,23 +231,27 @@ def Acao(acao, cor):
         virarEsquerda()
 
 def on_connect(client, userdata, flags, rc):
-    client.subscribe([("topic/teste", 0)])
+    client.subscribe([ ("topic/sensor/color1", 0), ("topic/sensor/color2", 0)])
 
 def on_disconnect(client, userdata, rc=0):
     client.loop_stop()
 
 def on_message(client, userdata, msg):
-    global ultra
+    global sensorCorEsquerdo, sensorCorDireito
 
-    if msg.topic == "topic/teste":
-        ultra = bool(msg.payload)
+    if msg.topic == "topic/sensor/color1":
+        sensorCorEsquerdo = int(msg.payload)
+    if msg.topic == "topic/sensor/color2":
+        sensorCorDireito = int(msg.payload)
 
 client = mqtt.Client()
-client.connect("169.254.113.121", 1883, 60)
+client.connect("169.254.166.54", 1883, 60)
+
 
 motorEsquerdo = LargeMotor('outA')
 motorDireito = LargeMotor('outB')
 motorTampa = LargeMotor('outC')
+
 
 giroscopio = GyroSensor('in1')
 ultrassonico = UltrasonicSensor('in2')
@@ -251,22 +261,17 @@ sensorInfraEsquerdo = InfraredSensor("in3")
 sensorInfraDireito = InfraredSensor("in4")
 
 
-
 semCor, preto, azul, verde, vermelho, branco = 0, 1, 2, 3, 5, 6
 
-corVermelha = ""
-corVerde = ""
-corAzul = ""
-
-indo_voltando = True
-
-contCores = 0
+sensorCorEsquerdo = ColorSensor.COLOR_WHITE
+sensorCorDireito = ColorSensor.COLOR_WHITE
 
 
 def main():
 
-    global ultra
-    global indo_voltando
+    global sensorCorEsquerdo, sensorCorDireito
+
+    indo_voltando = True
 
     corVermelha = ""
     corVerde = ""
@@ -282,15 +287,15 @@ def main():
 
         while True:
 
-            print(ultra)
+            print ()
 
-
-            corLida = sensorCorEsquerdo.color
+            corLida = sensorCorEsquerdo
 
             print("Cor verde: ", corVerde)
             print("Cor vermelha: ", corVermelha)
             print("Cor azul: ", corAzul)
-
+            print("Indo ou voltando: ", indo_voltando)
+            print("Contador de Cores: ", contCores)
 
             if indo_voltando == True:
                 if contCores == 6 and corLida == azul:
@@ -352,7 +357,7 @@ def main():
     except KeyboardInterrupt:
         motorEsquerdo.stop()
         motorDireito.stop()
-        motorBoneco.stop()
+        motorTampa.stop()
 
 if __name__ == '__main__':
     main()
