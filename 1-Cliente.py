@@ -66,27 +66,19 @@ def sair_Quadrado():
 
 
 def pegar_Boneco():
-    # posicao_motor_D = motorDireito.position
-    # posicao_motor_E = motorEsquerdo.position
-    # motorEsquerdo.run_to_abs_pos(position_sp=posicao_motor_E - 150, speed_sp=200)
-    # motorDireito.run_to_abs_pos(position_sp=posicao_motor_D - 150, speed_sp=200)
+    global ultra
+    motorPorta.stop()
     cont = 0
     while cont <= 6:
         posicao_motor_D = motorDireito.position
         posicao_motor_E = motorEsquerdo.position
-        if cont == 1 or cont == 5:
-            qtd = 340
-        elif cont == 2:
-            qtd = 100
-        elif cont == 4:
-            qtd = 200
 
         if cont == 0:
             motorPorta.run_forever(speed_sp=-1000)
             sleep(2)
         elif cont == 1:
-            motorDireito.run_to_abs_pos(position_sp=posicao_motor_D + 475, speed_sp=100)
-            motorEsquerdo.run_to_abs_pos(position_sp=posicao_motor_E - 475, speed_sp=100)
+            motorDireito.run_to_abs_pos(position_sp=posicao_motor_D - 475, speed_sp=100)
+            motorEsquerdo.run_to_abs_pos(position_sp=posicao_motor_E + 475, speed_sp=100)
             sleep(5)
         elif cont == 2:
             motorEsquerdo.run_to_abs_pos(position_sp=posicao_motor_E + 600, speed_sp=200)
@@ -96,15 +88,16 @@ def pegar_Boneco():
             motorPorta.run_forever(speed_sp=+1000)
             sleep(2)
         elif cont == 4:
-            motorEsquerdo.run_to_abs_pos(position_sp=posicao_motor_E - 600, speed_sp=200)
-            motorDireito.run_to_abs_pos(position_sp=posicao_motor_D - 600, speed_sp=200)
+            motorEsquerdo.run_to_abs_pos(position_sp=posicao_motor_E - 900, speed_sp=200)
+            motorDireito.run_to_abs_pos(position_sp=posicao_motor_D - 900, speed_sp=200)
             sleep(2)
         elif cont == 5:
-            motorDireito.run_to_abs_pos(position_sp=posicao_motor_D - 475, speed_sp=100)
-            motorEsquerdo.run_to_abs_pos(position_sp=posicao_motor_E + 475, speed_sp=100)
+            motorDireito.run_to_abs_pos(position_sp=posicao_motor_D + 475, speed_sp=100)
+            motorEsquerdo.run_to_abs_pos(position_sp=posicao_motor_E - 475, speed_sp=100)
             sleep(5)
 
         cont += 1
+    ultra = False
 
 
 def andarSensoresquerdo():
@@ -303,74 +296,79 @@ def main():
         client.loop_start()
 
         while True:
-            # pegar_Boneco()
-            # break
-            corLida = sensorCorEsquerdo.value()
+            andarSensorEsquerdo()
+            print(ultra)
+            if ultra:
+                motorEsquerdo.stop()
+                motorDireito.stop()
+                pegar_Boneco()
 
-            print("ULTRA: ", ultra)
-
-            print("Cor verde: ", corVerde)
-            print("Cor vermelha: ", corVermelha)
-            print("Cor azul: ", corAzul)
-            print("Indo ou voltando: ", indo_voltando)
-            print("Contador de Cores: ", contCores)
-
-            if indo_voltando == True:
-                if contCores == 6 and corLida == azul:
-                    seguirFrente(azul)
-                    print("AQUI")
-                    sair_Quadrado()
-                    indo_voltando = False
-                    print("AQUI 2")
-                    corAzul = mudarSentidos(corAzul)
-                    corVermelha = mudarSentidos(corVermelha)
-                    corVerde = mudarSentidos(corVerde)
-                    contCores = 0
-
-            if indo_voltando == False:
-                if contCores == 7:
-                    print("AQUI3")
-                    for i in range(100):
-                        andarSensorEsquerdo()
-                    for i in range(900):
-                        motorEsquerdo.run_forever(speed_sp=-250)
-                        motorDireito.run_forever(speed_sp=250)
-
-                    indo_voltando = True
-                    corAzul = mudarSentidos(corAzul)
-                    corVermelha = mudarSentidos(corVermelha)
-                    corVerde = mudarSentidos(corVerde)
-                    contCores = 0
-
-            if corLida == branco or corLida == preto:
-                andarSensorEsquerdo()
-
-            if corLida == azul:
-                if corAzul == "":
-                    contCores += 1
-                    corAzul = SaberLado(azul)
-
-                else:
-                    contCores += 1
-                    Acao(corAzul, azul)
-
-            if corLida == verde:
-                if corVerde == "":
-                    contCores += 1
-                    corVerde = SaberLado(verde)
-
-                else:
-                    contCores += 1
-                    Acao(corVerde, verde)
-
-            if corLida == vermelho:
-                if corVermelha == "":
-                    contCores += 1
-                    corVermelha = SaberLado(vermelho)
-
-                else:
-                    contCores += 1
-                    Acao(corVermelha, vermelho)
+            # corLida = sensorCorEsquerdo.value()
+            #
+            # print("ULTRA: ", ultra)
+            #
+            # print("Cor verde: ", corVerde)
+            # print("Cor vermelha: ", corVermelha)
+            # print("Cor azul: ", corAzul)
+            # print("Indo ou voltando: ", indo_voltando)
+            # print("Contador de Cores: ", contCores)
+            #
+            # if indo_voltando == True:
+            #     if contCores == 6 and corLida == azul:
+            #         seguirFrente(azul)
+            #         print("AQUI")
+            #         sair_Quadrado()
+            #         indo_voltando = False
+            #         print("AQUI 2")
+            #         corAzul = mudarSentidos(corAzul)
+            #         corVermelha = mudarSentidos(corVermelha)
+            #         corVerde = mudarSentidos(corVerde)
+            #         contCores = 0
+            #
+            # if indo_voltando == False:
+            #     if contCores == 7:
+            #         print("AQUI3")
+            #         for i in range(100):
+            #             andarSensorEsquerdo()
+            #         for i in range(900):
+            #             motorEsquerdo.run_forever(speed_sp=-250)
+            #             motorDireito.run_forever(speed_sp=250)
+            #
+            #         indo_voltando = True
+            #         corAzul = mudarSentidos(corAzul)
+            #         corVermelha = mudarSentidos(corVermelha)
+            #         corVerde = mudarSentidos(corVerde)
+            #         contCores = 0
+            #
+            # if corLida == branco or corLida == preto:
+            #     andarSensorEsquerdo()
+            #
+            # if corLida == azul:
+            #     if corAzul == "":
+            #         contCores += 1
+            #         corAzul = SaberLado(azul)
+            #
+            #     else:
+            #         contCores += 1
+            #         Acao(corAzul, azul)
+            #
+            # if corLida == verde:
+            #     if corVerde == "":
+            #         contCores += 1
+            #         corVerde = SaberLado(verde)
+            #
+            #     else:
+            #         contCores += 1
+            #         Acao(corVerde, verde)
+            #
+            # if corLida == vermelho:
+            #     if corVermelha == "":
+            #         contCores += 1
+            #         corVermelha = SaberLado(vermelho)
+            #
+            #     else:
+            #         contCores += 1
+            #         Acao(corVermelha, vermelho)
 
     except KeyboardInterrupt:
         motorEsquerdo.stop()
@@ -380,7 +378,7 @@ def main():
 
 
 client = mqtt.Client()
-client.connect("169.254.214.223", 1883, 60)
+client.connect("169.254.194.78", 1883, 60)
 
 
 motorEsquerdo = LargeMotor('outA')
