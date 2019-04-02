@@ -15,7 +15,8 @@ def on_disconnect(client, userdata, rc=0):
 
 client.on_disconnect = on_disconnect
 
-distanciaPermitida = 20
+distanciaPermitida = 25
+
 
 while True:
     ultrassonicoAtual = ultrassonico.value() / 10
