@@ -15,7 +15,7 @@ def on_disconnect(client, userdata, rc=0):
 
 client.on_disconnect = on_disconnect
 
-distanciaPermitida = 25
+distanciaPermitida = 20
 
 
 while True:
