@@ -12,9 +12,9 @@ def funcao_saturacao(v):
         return v
 
 def sair_Quadrado():
-    
+
     print("Função sair do quadrado")
-    
+
     posicao_motor_D = motorDireito.position
     posicao_motor_E = motorEsquerdo.position
     global temBoneco
@@ -87,9 +87,9 @@ def sair_Quadrado():
 
 
 def pegar_Boneco():
-    
+
     print("Pegar boneco")
-    
+
     global ultra
     motorPorta.stop()
     cont = 0
@@ -181,6 +181,7 @@ def andarSensorEsquerdo():
 
     if sensorCorDireito.value() == branco and sensorInfraEsquerdo.value() < 22:
         if temporizador == False:
+            print("PLATAFORMA")
             andarSensorDireito()
         else:
             for i in range(150):
@@ -245,9 +246,9 @@ def seguirFrente(cor):
 
 
 def saberGiro(cont):
-    
+
     print("Função que Decide para que lado a cor vai")
-    
+
     if cont == 1:
         return "Esquerda"
     elif cont == 2:
@@ -320,9 +321,9 @@ def SaberLado(cor):
 
 
 def mudarSentidos(cor):
-    
+
     print("Função quando voltar, Mudar os sentidos das cores")
-    
+
     if cor == "Seguir":
         return "Seguir"
     elif cor == "Esquerda":
@@ -331,9 +332,9 @@ def mudarSentidos(cor):
         return "Esquerda"
 
 def Acao(acao, cor):
-    
+
     print("Definir a Ação da cor (esquerda, direita, frente")
-    
+
     if acao == "Seguir":
         seguirFrente(cor)
     elif acao == "Direita":
@@ -372,19 +373,13 @@ def main():
         client.on_message = on_message
         client.loop_start()
 
-
-
         while True:
-
-            print("\n")
-
-            print("ULTRA: ", ultra)
-
+            
+            
             print("Cor verde: ", corVerde)
             print("Cor vermelha: ", corVermelha)
             print("Cor azul: ", corAzul)
-            print("Indo ou voltando: ", indo_voltando)
-            print("Contador de Cores: ", contCores)
+            
 
             if indo_voltando == True:
                 if contCores == 7 and sensorCorEsquerdo.value() == azul:
@@ -445,8 +440,6 @@ def main():
         motorDireito.stop()
         motorPorta.stop()
 
-
-
 client = mqtt.Client()
 client.connect("169.254.61.246", 1883, 60)
 
@@ -454,10 +447,6 @@ client.connect("169.254.61.246", 1883, 60)
 motorEsquerdo = LargeMotor('outB')
 motorDireito = LargeMotor('outC')
 motorPorta = LargeMotor('outD')
-
-ultra = False
-
-print(11)
 
 sensorInfraEsquerdo = InfraredSensor("in1")
 sensorInfraDireito = InfraredSensor("in2")
@@ -471,6 +460,13 @@ semCor, preto, azul, verde, vermelho, branco = 0, 1, 2, 3, 5, 6
 
 temporizador = False
 temBoneco = False
+ultra = False
+
+
+print("---------------------")
+print("------ INICIOU ------")
+print("---------------------")
+
 
 if __name__ == '__main__':
     main()
