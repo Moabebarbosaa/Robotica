@@ -2,6 +2,8 @@
 from time import sleep
 from ev3dev.ev3 import *
 import paho.mqtt.client as mqtt
+from os import system
+
 
 def funcao_saturacao(v):
     if v > 1000:
@@ -11,15 +13,14 @@ def funcao_saturacao(v):
     else:
         return v
 
-def sair_Quadrado():
 
-    print("Função sair do quadrado")
+def sair_Quadrado():
+    print("Funcao sair do quadrado")
 
     posicao_motor_D = motorDireito.position
     posicao_motor_E = motorEsquerdo.position
     global temBoneco
     cont = 0
-
 
     while sensorCorEsquerdo.value() != preto:
         motorEsquerdo.run_forever(speed_sp=225)
@@ -39,7 +40,6 @@ def sair_Quadrado():
 
     motorPorta.run_forever(speed_sp=+1000)
     sleep(2)
-
 
     while cont <= 4:
         posicao_motor_D = motorDireito.position
@@ -76,7 +76,6 @@ def sair_Quadrado():
             while sensorCorDireito.value() != azul:
                 motorDireito.run_forever(speed_sp=100)
 
-
             seguirFrente(azul)
             break
 
@@ -87,7 +86,6 @@ def sair_Quadrado():
 
 
 def pegar_Boneco():
-
     print("Pegar boneco")
 
     global ultra
@@ -136,13 +134,13 @@ def PID_SairQuadrado():
     erro = offset - sensorInfraEsquerdo.value()
     giro = erro * constProp
 
-
     if erro > 8:
         motorEsquerdo.run_forever(speed_sp=funcao_saturacao(100 + giro))
         motorDireito.run_forever(speed_sp=funcao_saturacao(1250 - giro))
     elif erro < 8:
         motorEsquerdo.run_forever(speed_sp=funcao_saturacao(200 + giro))
         motorDireito.run_forever(speed_sp=funcao_saturacao(200 - giro))
+
 
 def FINALMENTE():
     offset = 28
@@ -155,10 +153,25 @@ def FINALMENTE():
     motorEsquerdo.run_forever(speed_sp=funcao_saturacao(500 - giro))
     motorDireito.run_forever(speed_sp=funcao_saturacao(500 + giro))
 
+
 def andarSensorEsquerdo():
     global ultra
     global temporizador
     global temBoneco
+
+    # if botao.enter:
+    #     print("\n\n\n\n\n\n\n\n\n\n   ----- Iniciar novamente -----")
+    #     system("clear")
+    #     temBoneco = False
+    #     ultra = False
+    #
+    # if botao.down:
+    #     print("\n\n\n\n\n\n\n\n\n\n   ----- Iniciar novamente do zero -----")
+    #     motorEsquerdo.stop()
+    #     motorDireito.stop()
+    #     motorPorta.stop()
+    #     main()
+
 
     offset = 28
 
@@ -181,7 +194,6 @@ def andarSensorEsquerdo():
 
     if sensorCorDireito.value() == branco and sensorInfraEsquerdo.value() < 22:
         if temporizador == False:
-            print("PLATAFORMA")
             andarSensorDireito()
         else:
             for i in range(150):
@@ -191,6 +203,7 @@ def andarSensorEsquerdo():
     else:
         motorEsquerdo.run_forever(speed_sp=funcao_saturacao(500 - giro))
         motorDireito.run_forever(speed_sp=funcao_saturacao(500 + giro))
+
 
 def andarSensorDireito():
     global temporizador
@@ -213,42 +226,40 @@ def andarSensorDireito():
 
 
 def virarDireita():
-    print("Virar Direita")
+    print("===== VIRAR DIREITA =====")
     for i in range(400):
         andarSensorDireito()
 
+
 def virarEsquerda():
-    print("Virar Esquerda")
-    for i in range(400):
+    print("===== VIRAR ESQUERDA =====")
+    for i in range(200):
         andarSensorEsquerdo()
 
 
 def alinhar(cor):
-
     while sensorCorEsquerdo.value() == cor or sensorCorDireito.value() == cor:
 
         if sensorCorDireito.value() != branco:
             motorDireito.run_forever(speed_sp=-80)
-            motorEsquerdo.run_forever(speed_sp=80)
+            motorEsquerdo.run_forever(speed_sp=30)
 
         if sensorCorEsquerdo.value() != branco:
             motorEsquerdo.run_forever(speed_sp=-80)
-            motorDireito.run_forever(speed_sp=80)
+            motorDireito.run_forever(speed_sp=30)
 
 
 def seguirFrente(cor):
-    print("Seguir em frente!")
+    print("===== SEGUIR EM FRENTE =====")
 
     alinhar(cor)
     for i in range(1000):
-        motorDireito.run_forever(speed_sp=200)
         motorEsquerdo.run_forever(speed_sp=200)
+        motorDireito.run_forever(speed_sp=200)
+
 
 
 def saberGiro(cont):
-
-    print("Função que Decide para que lado a cor vai")
-
     if cont == 1:
         return "Esquerda"
     elif cont == 2:
@@ -268,9 +279,8 @@ def moda(l):
 
     return valor
 
-def verificarCor():
 
-    print("Função verificar cor (MODA)")
+def verificarCor():
 
     listaDeCor = []
 
@@ -283,8 +293,7 @@ def verificarCor():
 
 
 def SaberLado(cor):
-
-    print("Função APRENDENDO A COR")
+    print(" ======== FUNCAO APRENDER COR ========")
 
     contCor = 0
     contCorTotal = 0
@@ -300,7 +309,8 @@ def SaberLado(cor):
             if verificarCor() == ultimaCOR:
                 return saberGiro(contCorTotal)
 
-        if (sensorCorEsquerdo.value() != cor and sensorCorEsquerdo.value() not in coresIndesejadas) or contCorTotal >= 3:
+        if (
+                sensorCorEsquerdo.value() != cor and sensorCorEsquerdo.value() not in coresIndesejadas) or contCorTotal >= 3:
             if verificarCor() == sensorCorEsquerdo.value():
                 return saberGiro(contCorTotal)
 
@@ -318,11 +328,8 @@ def SaberLado(cor):
             ultimaCOR = preto
 
 
-
-
 def mudarSentidos(cor):
 
-    print("Função quando voltar, Mudar os sentidos das cores")
 
     if cor == "Seguir":
         return "Seguir"
@@ -331,9 +338,8 @@ def mudarSentidos(cor):
     else:
         return "Esquerda"
 
-def Acao(acao, cor):
 
-    print("Definir a Ação da cor (esquerda, direita, frente")
+def Acao(acao, cor):
 
     if acao == "Seguir":
         seguirFrente(cor)
@@ -346,8 +352,10 @@ def Acao(acao, cor):
 def on_connect(client, userdata, flags, rc):
     client.subscribe([("topic/sensor/ultra", 0)])
 
+
 def on_disconnect(client, userdata, rc=0):
     client.loop_stop()
+
 
 def on_message(client, userdata, msg):
     global ultra
@@ -357,8 +365,7 @@ def on_message(client, userdata, msg):
 
 
 def main():
-
-    global ultra
+    global ultra, temBoneco
 
     indo_voltando = True
 
@@ -373,16 +380,25 @@ def main():
         client.on_message = on_message
         client.loop_start()
 
+        # print("\n\n\n\n   ----- Botao do meio para iniciar -----")
+        # while True:
+        #     if botao.enter:
+        #         system("clear")
+        #         temBoneco = False
+        #         ultra = False
+        #         break
+
         while True:
-            
-            
+
             print("Cor verde: ", corVerde)
             print("Cor vermelha: ", corVermelha)
             print("Cor azul: ", corAzul)
-            
+            print("Quantidades de cores: ", contCores)
+
+
 
             if indo_voltando == True:
-                if contCores == 7 and sensorCorEsquerdo.value() == azul:
+                if contCores == 6 and sensorCorEsquerdo.value() == azul:
                     seguirFrente(azul)
                     sair_Quadrado()
                     indo_voltando = False
@@ -392,10 +408,10 @@ def main():
                     contCores = 0
 
             else:
-                if contCores == 7:
+                if contCores == 6:
                     for i in range(200):
                         andarSensorEsquerdo()
-                    for i in range(700):
+                    for i in range(300):
                         motorEsquerdo.run_forever(speed_sp=-250)
                         motorDireito.run_forever(speed_sp=250)
 
@@ -440,9 +456,9 @@ def main():
         motorDireito.stop()
         motorPorta.stop()
 
-client = mqtt.Client()
-client.connect("169.254.61.246", 1883, 60)
 
+client = mqtt.Client()
+client.connect("169.254.61.245", 1883, 60)
 
 motorEsquerdo = LargeMotor('outB')
 motorDireito = LargeMotor('outC')
@@ -456,17 +472,17 @@ sensorCorDireito = ColorSensor("in4")
 sensorCorEsquerdo.mode = 'COL-COLOR'
 sensorCorDireito.mode = 'COL-COLOR'
 
+botao = Button()
+
 semCor, preto, azul, verde, vermelho, branco = 0, 1, 2, 3, 5, 6
 
 temporizador = False
 temBoneco = False
 ultra = False
 
-
 print("---------------------")
 print("------ INICIOU ------")
 print("---------------------")
-
 
 if __name__ == '__main__':
     main()
