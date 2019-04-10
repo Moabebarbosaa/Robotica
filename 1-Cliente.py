@@ -12,6 +12,9 @@ def funcao_saturacao(v):
         return v
 
 def sair_Quadrado():
+    
+    print("Função sair do quadrado")
+    
     posicao_motor_D = motorDireito.position
     posicao_motor_E = motorEsquerdo.position
     global temBoneco
@@ -19,7 +22,7 @@ def sair_Quadrado():
 
 
     while sensorCorEsquerdo.value() != preto:
-        motorEsquerdo.run_forever(speed_sp=200)
+        motorEsquerdo.run_forever(speed_sp=225)
         motorDireito.run_forever(speed_sp=200)
 
     for i in range(500):
@@ -84,12 +87,13 @@ def sair_Quadrado():
 
 
 def pegar_Boneco():
+    
+    print("Pegar boneco")
+    
     global ultra
     motorPorta.stop()
     cont = 0
-    # for i in range(30):
-    #     motorEsquerdo.run_forever(speed_sp=-200)
-    #     motorDireito.run_forever(speed_sp=-200)
+
     while cont <= 6:
         posicao_motor_D = motorDireito.position
         posicao_motor_E = motorEsquerdo.position
@@ -166,6 +170,7 @@ def andarSensorEsquerdo():
     cor = sensorCorDireito.value()
 
     if ultra == True and temBoneco == False:
+        print("PEGAR BONECO")
         motorEsquerdo.stop()
         motorDireito.stop()
         temBoneco = True
@@ -207,10 +212,12 @@ def andarSensorDireito():
 
 
 def virarDireita():
+    print("Virar Direita")
     for i in range(400):
         andarSensorDireito()
 
 def virarEsquerda():
+    print("Virar Esquerda")
     for i in range(400):
         andarSensorEsquerdo()
 
@@ -238,6 +245,9 @@ def seguirFrente(cor):
 
 
 def saberGiro(cont):
+    
+    print("Função que Decide para que lado a cor vai")
+    
     if cont == 1:
         return "Esquerda"
     elif cont == 2:
@@ -259,6 +269,8 @@ def moda(l):
 
 def verificarCor():
 
+    print("Função verificar cor (MODA)")
+
     listaDeCor = []
 
     for i in range(20):
@@ -271,6 +283,8 @@ def verificarCor():
 
 def SaberLado(cor):
 
+    print("Função APRENDENDO A COR")
+
     contCor = 0
     contCorTotal = 0
 
@@ -281,16 +295,12 @@ def SaberLado(cor):
     while True:
         andarSensorEsquerdo()
 
-        print("Cor ", contCorTotal)
-
         if ultimaCOR == sensorCorEsquerdo.value() and sensorCorEsquerdo.value() != preto:
             if verificarCor() == ultimaCOR:
-                print(111111)
                 return saberGiro(contCorTotal)
 
         if (sensorCorEsquerdo.value() != cor and sensorCorEsquerdo.value() not in coresIndesejadas) or contCorTotal >= 3:
             if verificarCor() == sensorCorEsquerdo.value():
-                print(222222)
                 return saberGiro(contCorTotal)
 
         while sensorCorEsquerdo.value() == cor:
@@ -310,6 +320,9 @@ def SaberLado(cor):
 
 
 def mudarSentidos(cor):
+    
+    print("Função quando voltar, Mudar os sentidos das cores")
+    
     if cor == "Seguir":
         return "Seguir"
     elif cor == "Esquerda":
@@ -318,6 +331,9 @@ def mudarSentidos(cor):
         return "Esquerda"
 
 def Acao(acao, cor):
+    
+    print("Definir a Ação da cor (esquerda, direita, frente")
+    
     if acao == "Seguir":
         seguirFrente(cor)
     elif acao == "Direita":
@@ -360,10 +376,7 @@ def main():
 
         while True:
 
-
-            corLida = sensorCorEsquerdo.value()
-
-            print("\n\n\n\n\n\n")
+            print("\n")
 
             print("ULTRA: ", ultra)
 
@@ -372,15 +385,12 @@ def main():
             print("Cor azul: ", corAzul)
             print("Indo ou voltando: ", indo_voltando)
             print("Contador de Cores: ", contCores)
-            print("Tem boneco: ", temBoneco)
 
             if indo_voltando == True:
-                if contCores == 7 and corLida == azul:
+                if contCores == 7 and sensorCorEsquerdo.value() == azul:
                     seguirFrente(azul)
-                    print("AQUI")
                     sair_Quadrado()
                     indo_voltando = False
-                    print("AQUI 2")
                     corAzul = mudarSentidos(corAzul)
                     corVermelha = mudarSentidos(corVermelha)
                     corVerde = mudarSentidos(corVerde)
@@ -388,7 +398,6 @@ def main():
 
             else:
                 if contCores == 7:
-                    print("AQUI3")
                     for i in range(200):
                         andarSensorEsquerdo()
                     for i in range(700):
@@ -401,10 +410,10 @@ def main():
                     corVerde = mudarSentidos(corVerde)
                     contCores = 0
 
-            if corLida == branco or corLida == preto:
+            if sensorCorEsquerdo.value() == branco or sensorCorEsquerdo.value() == preto:
                 andarSensorEsquerdo()
 
-            if corLida == azul:
+            if sensorCorEsquerdo.value() == azul:
                 if corAzul == "":
                     contCores += 1
                     corAzul = SaberLado(azul)
@@ -413,7 +422,7 @@ def main():
                     contCores += 1
                     Acao(corAzul, azul)
 
-            if corLida == verde:
+            if sensorCorEsquerdo.value() == verde:
                 if corVerde == "":
                     contCores += 1
                     corVerde = SaberLado(verde)
@@ -422,7 +431,7 @@ def main():
                     contCores += 1
                     Acao(corVerde, verde)
 
-            if corLida == vermelho:
+            if sensorCorEsquerdo.value() == vermelho:
                 if corVermelha == "":
                     contCores += 1
                     corVermelha = SaberLado(vermelho)
@@ -439,7 +448,7 @@ def main():
 
 
 client = mqtt.Client()
-client.connect("169.254.245.104", 1883, 60)
+client.connect("169.254.61.246", 1883, 60)
 
 
 motorEsquerdo = LargeMotor('outB')
