@@ -17,29 +17,15 @@ def funcao_saturacao(v):
 def sair_Quadrado():
     print("Funcao sair do quadrado")
 
-    posicao_motor_D = motorDireito.position
-    posicao_motor_E = motorEsquerdo.position
-    global temBoneco
     cont = 0
 
     while sensorCorEsquerdo.value() != preto:
         motorEsquerdo.run_forever(speed_sp=225)
         motorDireito.run_forever(speed_sp=200)
 
-    for i in range(500):
-        motorEsquerdo.run_forever(speed_sp=200)
-        motorDireito.run_forever(speed_sp=200)
-
-    motorPorta.run_forever(speed_sp=-1000)
-    sleep(2)
-
-    for i in range(200):
-        motorEsquerdo.run_forever(speed_sp=-200)
-        motorDireito.run_forever(speed_sp=-200)
-    sleep(1)
-
-    motorPorta.run_forever(speed_sp=+1000)
-    sleep(2)
+        motorEsquerdo.stop()
+        motorDireito.stop()
+        deixar_boneco()
 
     while cont <= 4:
         posicao_motor_D = motorDireito.position
@@ -82,7 +68,27 @@ def sair_Quadrado():
         else:
             PID_SairQuadrado()
 
-    temBoneco = False
+
+def deixar_boneco():
+
+
+    for i in range(500):
+        motorEsquerdo.run_forever(speed_sp=200)
+        motorDireito.run_forever(speed_sp=200)
+
+    motorPorta.run_forever(speed_sp=-1000)
+    sleep(2)
+
+    for i in range(200):
+        motorEsquerdo.run_forever(speed_sp=-200)
+        motorDireito.run_forever(speed_sp=-200)
+    sleep(1)
+
+    motorPorta.run_forever(speed_sp=+1000)
+    sleep(2)
+
+    motorEsquerdo.stop()
+    motorDireito.stop()
 
 
 def pegar_Boneco():
@@ -100,8 +106,8 @@ def pegar_Boneco():
             motorPorta.run_forever(speed_sp=-1000)
             sleep(2)
         elif cont == 1:
-            motorDireito.run_to_abs_pos(position_sp=posicao_motor_D - 475, speed_sp=200)
-            motorEsquerdo.run_to_abs_pos(position_sp=posicao_motor_E + 475, speed_sp=200)
+            motorDireito.run_to_abs_pos(position_sp=posicao_motor_D - 475, speed_sp=400)
+            motorEsquerdo.run_to_abs_pos(position_sp=posicao_motor_E + 475, speed_sp=400)
             sleep(5)
         elif cont == 2:
             motorEsquerdo.run_to_abs_pos(position_sp=posicao_motor_E + 600, speed_sp=200)
@@ -115,8 +121,8 @@ def pegar_Boneco():
             motorDireito.run_to_abs_pos(position_sp=posicao_motor_D - 1050, speed_sp=250)
             sleep(2)
         elif cont == 5:
-            motorDireito.run_to_abs_pos(position_sp=posicao_motor_D + 475, speed_sp=200)
-            motorEsquerdo.run_to_abs_pos(position_sp=posicao_motor_E - 475, speed_sp=200)
+            motorDireito.run_to_abs_pos(position_sp=posicao_motor_D + 475, speed_sp=400)
+            motorEsquerdo.run_to_abs_pos(position_sp=posicao_motor_E - 475, speed_sp=400)
             sleep(5)
 
         cont += 1
@@ -367,6 +373,9 @@ def on_message(client, userdata, msg):
 def main():
     global ultra, temBoneco
 
+    posicao_motor_D = motorDireito.position
+    posicao_motor_E = motorEsquerdo.position
+
     indo_voltando = True
 
     corVermelha = ""
@@ -394,13 +403,22 @@ def main():
             print("Cor vermelha: ", corVermelha)
             print("Cor azul: ", corAzul)
             print("Quantidades de cores: ", contCores)
-
-
+            print("Tem bonce? ", temBoneco)
 
             if indo_voltando == True:
-                if contCores == 6 and sensorCorEsquerdo.value() == azul:
+                if contCores == 6 and sensorCorEsquerdo.value() == azul and temBoneco:
                     seguirFrente(azul)
                     sair_Quadrado()
+                    indo_voltando = False
+                    corAzul = mudarSentidos(corAzul)
+                    corVermelha = mudarSentidos(corVermelha)
+                    corVerde = mudarSentidos(corVerde)
+                    contCores = 0
+                    temBoneco = False
+
+                else:
+                    motorDireito.run_to_abs_pos(position_sp=posicao_motor_D - 950, speed_sp=400)
+                    motorEsquerdo.run_to_abs_pos(position_sp=posicao_motor_E + 950, speed_sp=400)
                     indo_voltando = False
                     corAzul = mudarSentidos(corAzul)
                     corVermelha = mudarSentidos(corVermelha)
