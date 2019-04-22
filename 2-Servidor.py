@@ -35,4 +35,4 @@ while True:
 
     if ultrassonicoAtual <= distanciaPermitida:
         client.publish(topic="topic/sensor/ultra", payload=True, qos=0, retain=False)
-        print(12345)
+        print("TEM BONECO")
