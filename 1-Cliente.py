@@ -15,6 +15,7 @@ def funcao_saturacao(v):
 
 
 def sair_Quadrado():
+    global ultra
     print("Funcao sair do quadrado")
 
     cont = 0
@@ -69,8 +70,10 @@ def sair_Quadrado():
             PID_SairQuadrado()
 
 
-def deixar_boneco():
+    ultra = False
 
+def deixar_boneco():
+    global temBoneco
 
     for i in range(500):
         motorEsquerdo.run_forever(speed_sp=200)
@@ -87,6 +90,8 @@ def deixar_boneco():
     motorPorta.run_forever(speed_sp=+1000)
     sleep(2)
 
+    temBoneco = False
+
     motorEsquerdo.stop()
     motorDireito.stop()
 
@@ -94,7 +99,6 @@ def deixar_boneco():
 def pegar_Boneco():
     print("Pegar boneco")
 
-    global ultra
     motorPorta.stop()
     cont = 0
 
@@ -130,7 +134,6 @@ def pegar_Boneco():
     for i in range(100):
         motorDireito.run_forever(speed_sp=300)
         motorEsquerdo.run_forever(speed_sp=300)
-    ultra = False
 
 
 def PID_SairQuadrado():
@@ -181,14 +184,11 @@ def andarSensorEsquerdo():
 
     offset = 28
 
-    constProp = 50
+    constProp = 40
     erro = offset - sensorInfraEsquerdo.value()
 
     giro = constProp * erro
 
-
-    print("Ultra: ", ultra)
-    print("Boneco: ", temBoneco)
     if ultra == True and temBoneco == False:
         print("PEGAR BONECO")
         motorEsquerdo.stop()
@@ -215,6 +215,7 @@ def andarSensorEsquerdo():
 
 
 def andarSensorDireito():
+    global ultra
     global temporizador
     global temBoneco
 
@@ -254,8 +255,9 @@ def alinhar(cor):
             motorEsquerdo.run_forever(speed_sp=30)
 
         if sensorCorEsquerdo.value() != branco:
-            motorEsquerdo.run_forever(speed_sp=-80)
             motorDireito.run_forever(speed_sp=30)
+            motorEsquerdo.run_forever(speed_sp=-80)
+
 
 
 def seguirFrente(cor):
@@ -373,10 +375,7 @@ def on_message(client, userdata, msg):
 
 
 def main():
-    global ultra, temBoneco
-
-
-
+    global temBoneco
     indo_voltando = True
 
     corVermelha = ""
@@ -403,27 +402,33 @@ def main():
             posicao_motor_E = motorEsquerdo.position
 
 
-            # print("Cor verde: ", corVerde)
-            # print("Cor vermelha: ", corVermelha)
-            # print("Cor azul: ", corAzul)
-            # print("Quantidades de cores: ", contCores)
-            # print("Tem bonce? ", temBoneco)
-            # print("COR: ", sensorCorEsquerdo.value())
+            print("Cor verde: ", corVerde)
+            print("Cor vermelha: ", corVermelha)
+            print("Cor azul: ", corAzul)
+            print("Quantidades de cores: ", contCores)
+            print("Tem boneco? ", temBoneco)
+            print("COR: ", sensorCorEsquerdo.value())
 
             if indo_voltando == True:
 
-                if contCores == 6 and sensorCorEsquerdo.value() == azul and temBoneco == False:
+                if contCores >= 6 and sensorCorEsquerdo.value() != branco and temBoneco == False:
                     print("NAO TEM BONECO === VOLTANDO")
-                    motorDireito.run_to_abs_pos(position_sp=posicao_motor_D - 950, speed_sp=400)
-                    motorEsquerdo.run_to_abs_pos(position_sp=posicao_motor_E + 950, speed_sp=400)
-                    sleep(5)
+
+                    for i in range(550):
+                        motorEsquerdo.run_forever(speed_sp=-300)
+                        motorDireito.run_forever(speed_sp=300)
+
+                    for i in range(100):
+                        motorEsquerdo.run_forever(speed_sp=200)
+                        motorDireito.run_forever(speed_sp=200)
+
                     indo_voltando = False
                     corAzul = mudarSentidos(corAzul)
                     corVermelha = mudarSentidos(corVermelha)
                     corVerde = mudarSentidos(corVerde)
                     contCores = 0
 
-                if contCores == 6 and sensorCorEsquerdo.value() == azul and temBoneco:
+                if contCores >= 6 and sensorCorEsquerdo.value() != branco and temBoneco:
                     print("ENTRANDO NO QUADRADO COM O BONECO")
                     seguirFrente(azul)
                     sair_Quadrado()
@@ -438,11 +443,11 @@ def main():
 
             else:
                 if contCores == 6:
-                    for i in range(200):
+                    for i in range(100):
                         andarSensorEsquerdo()
-                    for i in range(300):
-                        motorEsquerdo.run_forever(speed_sp=-250)
-                        motorDireito.run_forever(speed_sp=250)
+                    for i in range(550):
+                        motorEsquerdo.run_forever(speed_sp=-300)
+                        motorDireito.run_forever(speed_sp=300)
 
                     indo_voltando = True
                     corAzul = mudarSentidos(corAzul)
