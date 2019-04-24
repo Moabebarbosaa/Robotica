@@ -1,16 +1,21 @@
-import random
-
 velIdeal = 500
 
 cont = 0
 
+bateriaIdeal = 80
+carga = 80
+
 while (cont < 100):
 
-    carga = random.randint(1,50)
+    carga -= 1
+    if carga == 0:
+        break
 
-    erro = velIdeal/carga
-    velocidade = carga*erro
+    valorSoma = bateriaIdeal - carga
+
+    velocidade = 500+valorSoma
 
     print (velocidade)
-
+    
+    
     cont += 1
