@@ -97,8 +97,9 @@ def deixar_boneco():
 
 
 def pegar_Boneco():
-    print("Pegar boneco")
-
+    global temBoneco
+    #print("Pegar boneco")
+    temBoneco = True
     motorPorta.stop()
     cont = 0
 
@@ -166,7 +167,6 @@ def FINALMENTE():
 def andarSensorEsquerdo():
     global ultra
     global temporizador
-    global temBoneco
 
     # if botao.enter:
     #     print("\n\n\n\n\n\n\n\n\n\n   ----- Iniciar novamente -----")
@@ -184,16 +184,18 @@ def andarSensorEsquerdo():
 
     offset = 28
 
-    constProp = 40
+    constProp = 50
     erro = offset - sensorInfraEsquerdo.value()
 
     giro = constProp * erro
+
+    # print("ULTRA: ", ultra)
+    # print("TEMBONECO: ", temBoneco)
 
     if ultra == True and temBoneco == False:
         print("PEGAR BONECO")
         motorEsquerdo.stop()
         motorDireito.stop()
-        temBoneco = True
         pegar_Boneco()
 
     cor = sensorCorDireito.value()
@@ -202,7 +204,7 @@ def andarSensorEsquerdo():
 
     if sensorCorDireito.value() == branco and sensorInfraEsquerdo.value() < 22:
         if temporizador == False:
-            print("PLATAFORMA")
+           # print("PLATAFORMA")
             andarSensorDireito()
         else:
             for i in range(150):
@@ -217,7 +219,6 @@ def andarSensorEsquerdo():
 def andarSensorDireito():
     global ultra
     global temporizador
-    global temBoneco
 
     offset = 29
     constProp = 50
@@ -225,19 +226,13 @@ def andarSensorDireito():
     erro = offset - sensorInfraDireito.value()
     giro = erro * constProp
 
-    if ultra == True and temBoneco == False:
-        motorEsquerdo.stop()
-        motorDireito.stop()
-        temBoneco = True
-        pegar_Boneco()
-
     motorEsquerdo.run_forever(speed_sp=funcao_saturacao(500 + giro))
     motorDireito.run_forever(speed_sp=funcao_saturacao(500 - giro))
 
 
 def virarDireita():
     print("===== VIRAR DIREITA =====")
-    for i in range(400):
+    for i in range(450):
         andarSensorDireito()
 
 
@@ -264,7 +259,7 @@ def seguirFrente(cor):
     print("===== SEGUIR EM FRENTE =====")
 
     alinhar(cor)
-    for i in range(1000):
+    for i in range(1070):
         motorEsquerdo.run_forever(speed_sp=200)
         motorDireito.run_forever(speed_sp=200)
 
@@ -318,10 +313,14 @@ def SaberLado(cor):
 
         if ultimaCOR == sensorCorEsquerdo.value() and sensorCorEsquerdo.value() != preto:
             if verificarCor() == ultimaCOR:
+                motorEsquerdo.stop()
+                motorDireito.stop()
                 return saberGiro(contCorTotal)
 
         if (sensorCorEsquerdo.value() != cor and sensorCorEsquerdo.value() not in coresIndesejadas) or contCorTotal >= 3:
             if verificarCor() == sensorCorEsquerdo.value():
+                motorEsquerdo.stop()
+                motorDireito.stop()
                 return saberGiro(contCorTotal)
 
         while sensorCorEsquerdo.value() == cor:
@@ -371,11 +370,10 @@ def on_message(client, userdata, msg):
     global ultra
 
     if msg.topic == "topic/sensor/ultra":
-        ultra = bool(msg.payload)
+        ultra = True
 
 
 def main():
-    global temBoneco
     indo_voltando = True
 
     corVermelha = ""
@@ -389,6 +387,9 @@ def main():
         client.on_message = on_message
         client.loop_start()
 
+
+
+
         # print("\n\n\n\n   ----- Botao do meio para iniciar -----")
         # while True:
         #     if botao.enter:
@@ -396,94 +397,91 @@ def main():
         #         temBoneco = False
         #         ultra = False
         #         break
+        #
+        # while True:
+        #     print("Cor verde: ", corVerde)
+        #     print("Cor vermelha: ", corVermelha)
+        #     print("Cor azul: ", corAzul)
+        #     print("Quantidades de cores: ", contCores)
+        #
+        #     if indo_voltando == True:
+        #
+        #         if contCores >= 6 and temBoneco == False and sensorCorEsquerdo.value() == azul:
+        #             print("NAO TEM BONECO === VOLTANDO")
+        #
+        #             for i in range(550):
+        #                 motorEsquerdo.run_forever(speed_sp=-300)
+        #                 motorDireito.run_forever(speed_sp=300)
+        #
+        #             for i in range(100):
+        #                 motorEsquerdo.run_forever(speed_sp=200)
+        #                 motorDireito.run_forever(speed_sp=200)
+        #
+        #             indo_voltando = False
+        #             corAzul = mudarSentidos(corAzul)
+        #             corVermelha = mudarSentidos(corVermelha)
+        #             corVerde = mudarSentidos(corVerde)
+        #             contCores = 1
+        #
+        #         if contCores > 6 and temBoneco == True and sensorCorEsquerdo.value() == azul:
+        #             print("ENTRANDO NO QUADRADO COM O BONECO")
+        #             seguirFrente(azul)
+        #             sair_Quadrado()
+        #             indo_voltando = False
+        #             corAzul = mudarSentidos(corAzul)
+        #             corVermelha = mudarSentidos(corVermelha)
+        #             corVerde = mudarSentidos(corVerde)
+        #             contCores = 0
+        #
+        #
+        #
+        #     else:
+        #         if contCores > 6:
+        #             for i in range(100):
+        #                 andarSensorEsquerdo()
+        #             for i in range(550):
+        #                 motorEsquerdo.run_forever(speed_sp=-300)
+        #                 motorDireito.run_forever(speed_sp=300)
+        #
+        #             indo_voltando = True
+        #             corAzul = mudarSentidos(corAzul)
+        #             corVermelha = mudarSentidos(corVermelha)
+        #             corVerde = mudarSentidos(corVerde)
+        #             contCores = 0
+        #
+        #
+        #     if sensorCorEsquerdo.value() == branco or sensorCorEsquerdo.value() == preto:
+        #         #andarSensorEsquerdo()
+        #         print()
+        #
+        #
+        #     elif sensorCorEsquerdo.value() == azul:
+        #         if corAzul == "":
+        #             contCores += 1
+        #             corAzul = SaberLado(azul)
+        #
+        #         else:
+        #             contCores += 1
+        #             Acao(corAzul, azul)
+        #
+        #     elif sensorCorEsquerdo.value() == verde:
+        #         if corVerde == "":
+        #             contCores += 1
+        #             corVerde = SaberLado(verde)
+        #
+        #         else:
+        #             contCores += 1
+        #             Acao(corVerde, verde)
+        #
+        #     elif sensorCorEsquerdo.value() == vermelho:
+        #         if corVermelha == "":
+        #             contCores += 1
+        #             corVermelha = SaberLado(vermelho)
+        #
+        #         else:
+        #             contCores += 1
+        #             Acao(corVermelha, vermelho)
 
-        while True:
-            posicao_motor_D = motorDireito.position
-            posicao_motor_E = motorEsquerdo.position
-
-
-            print("Cor verde: ", corVerde)
-            print("Cor vermelha: ", corVermelha)
-            print("Cor azul: ", corAzul)
-            print("Quantidades de cores: ", contCores)
-            print("Tem boneco? ", temBoneco)
-            print("COR: ", sensorCorEsquerdo.value())
-
-            if indo_voltando == True:
-
-                if contCores >= 6 and sensorCorEsquerdo.value() != branco and temBoneco == False:
-                    print("NAO TEM BONECO === VOLTANDO")
-
-                    for i in range(550):
-                        motorEsquerdo.run_forever(speed_sp=-300)
-                        motorDireito.run_forever(speed_sp=300)
-
-                    for i in range(100):
-                        motorEsquerdo.run_forever(speed_sp=200)
-                        motorDireito.run_forever(speed_sp=200)
-
-                    indo_voltando = False
-                    corAzul = mudarSentidos(corAzul)
-                    corVermelha = mudarSentidos(corVermelha)
-                    corVerde = mudarSentidos(corVerde)
-                    contCores = 0
-
-                if contCores >= 6 and sensorCorEsquerdo.value() != branco and temBoneco:
-                    print("ENTRANDO NO QUADRADO COM O BONECO")
-                    seguirFrente(azul)
-                    sair_Quadrado()
-                    indo_voltando = False
-                    corAzul = mudarSentidos(corAzul)
-                    corVermelha = mudarSentidos(corVermelha)
-                    corVerde = mudarSentidos(corVerde)
-                    contCores = 0
-                    temBoneco = False
-
-
-
-            else:
-                if contCores == 6:
-                    for i in range(100):
-                        andarSensorEsquerdo()
-                    for i in range(550):
-                        motorEsquerdo.run_forever(speed_sp=-300)
-                        motorDireito.run_forever(speed_sp=300)
-
-                    indo_voltando = True
-                    corAzul = mudarSentidos(corAzul)
-                    corVermelha = mudarSentidos(corVermelha)
-                    corVerde = mudarSentidos(corVerde)
-                    contCores = 0
-
-            if sensorCorEsquerdo.value() == branco or sensorCorEsquerdo.value() == preto:
-                andarSensorEsquerdo()
-
-            if sensorCorEsquerdo.value() == azul:
-                if corAzul == "":
-                    contCores += 1
-                    corAzul = SaberLado(azul)
-
-                else:
-                    contCores += 1
-                    Acao(corAzul, azul)
-
-            if sensorCorEsquerdo.value() == verde:
-                if corVerde == "":
-                    contCores += 1
-                    corVerde = SaberLado(verde)
-
-                else:
-                    contCores += 1
-                    Acao(corVerde, verde)
-
-            if sensorCorEsquerdo.value() == vermelho:
-                if corVermelha == "":
-                    contCores += 1
-                    corVermelha = SaberLado(vermelho)
-
-                else:
-                    contCores += 1
-                    Acao(corVermelha, vermelho)
 
     except KeyboardInterrupt:
         motorEsquerdo.stop()
@@ -514,9 +512,6 @@ temporizador = False
 temBoneco = False
 ultra = False
 
-print("---------------------")
-print("------ INICIOU ------")
-print("---------------------")
 
 if __name__ == '__main__':
     main()
