@@ -1,0 +1,1 @@
+Código usado durante a competição de robótica no Laboratório de Robótica (LaR) do Instituto Federal da Paraíba que tinha como objetivo resgatar o número máximo de bonecos em pistas aleatórias e coloca-los em um lugar seguro.
