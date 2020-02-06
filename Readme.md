@@ -1,1 +1,22 @@
-Código usado durante a competição de robótica no Laboratório de Robótica (LaR) do Instituto Federal da Paraíba que tinha como objetivo resgatar o número máximo de bonecos em pistas aleatórias e coloca-los em um lugar seguro.
+## Robótica
+> Desenvolvido com LEGO
+
+![](media/foto.jfif)
+
+O projeto foi realizado durante a competiçao interna para o LaR - Laboratório de Robótica do IFPB - Campus Campina Grande 
+
+### Ideia
+
+Desenvolver um robô que faz o resgate de vítimas em ambientes desconhecidos.
+
+### Implementação
+
+A implementação foi feita em Python 3. Foi utilizado o protocolo MQTT, com o [Paho MQTT](https://pypi.org/project/paho-mqtt/) da eclipse. 
+
+### Funcionamento
+
+O robo deve durante o percurso aprender cores e realizar o resgate das vítimas em determinado tempo.
+
+###### Créditos - foto: [LEGO - Education](https://legoeducationstore.mcassab.com.br/lego-education-ensino-fundamental-ii-mindstorms-ev3/p)
+
+###### Desenvolvido por: Moabe Barbosa; Lucas Matheus; João Carlos. 
